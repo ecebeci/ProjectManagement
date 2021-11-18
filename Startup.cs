@@ -35,6 +35,9 @@ namespace ProjectManagement
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            services.AddDbContext<ProjectsContext>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("ProjectsContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
