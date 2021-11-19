@@ -14,6 +14,8 @@ namespace ProjectManagement.Models
         [StringLength(256)]
         public string Title { get; set; }
         //public List<Work> Works { get; set; } = new List<Work>();
+
+        public ICollection<Work> Works { get; set; }
     }
 
 }

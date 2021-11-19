@@ -8,12 +8,12 @@
             <div class="col-3">
                 <h5 class="card-title">@list.Title</h5>
                 <ul class="list-group">
-                    @if (list.ListWorks.Count > 0)
+                    @if (list.Works.Count > 0)
                     {
-                        @foreach (var item in List.ListWorks.OrderBy(x => x.OrderNumber))
+                        @foreach (var item in list.Works.OrderBy(x => x.OrderNumber))
                         {
                             <li class="list-group-item">
-                                <span style="background:@item.Color" class="col-3">&nbsp;&nbsp;</span>
+                                <span style="" class="col-3">&nbsp;&nbsp;</span>
                                 @item.Title
                             </li>
                         }
@@ -21,7 +21,7 @@
                     else
                     {
                         <li class="list-group-item text-muted">
-                            + Add a new
+                            + Add a new work
                         </li>
                     }
 

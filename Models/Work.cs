@@ -9,12 +9,13 @@ namespace ProjectManagement.Models
     public class Work
     {
         public string Title { get; set; }
+
         [Required]
         [StringLength(256)]
         public int Priority { get; set; }
 
-        public bool IsDone { get; set; }
+        public int OrderNumber { get; set; }
 
-        public List<ListWorks> ListWorks { get; set; }
+        public bool IsDone { get; set; }
     }
 }
