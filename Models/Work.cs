@@ -8,10 +8,10 @@ namespace ProjectManagement.Models
 {
     public class Work
     {
-        public string Title { get; set; }
-
         [Required]
         [StringLength(256)]
+        public string Title { get; set; }
+
         public int Priority { get; set; }
 
         public int OrderNumber { get; set; }

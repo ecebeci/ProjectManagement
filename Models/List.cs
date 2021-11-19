@@ -15,7 +15,7 @@ namespace ProjectManagement.Models
         public string Title { get; set; }
         //public List<Work> Works { get; set; } = new List<Work>();
 
-        public ICollection<Work> Works { get; set; }
+        public List<Work> Works { get; set; } = new List<Work>()
     }
 
 }
