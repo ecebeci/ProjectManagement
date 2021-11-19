@@ -11,12 +11,7 @@ namespace ProjectManagement.Controllers
     {
         public IActionResult Index()
         {
-            Random rnd = new Random();
-            int randomInt = rnd.Next(999, 9999);
-
-
-
-            return View(GetCard());
+            return View(GetList());
         }
 
         private List<Work> GetCard()
