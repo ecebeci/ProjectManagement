@@ -11,37 +11,32 @@ namespace ProjectManagement.Controllers
     {
         public IActionResult Index()
         {
-            Random rnd = new Random();
-            int randomInt = rnd.Next(999, 9999);
-
-
-
-            return View(GetCard());
+            return View(GetList());
         }
 
-        private List<Card> GetCard()
+        private List<List> GetList()
         {
-            return new List<Card>
+            return new List<Work>
             {
-                new Card {
+                new List {
                         Title = "Card 1",
-                        CardItems = new List<CardItem>
+                        Work = new List<Work>
                         {
-                            {new CardItem{ Title= "Mertin işi 01", OrderNumber =1, Color="red"} },
-                            {new CardItem{ Title= "Mertin işi 02", OrderNumber =2, Color="blue"} },
-                            {new CardItem{ Title= "Mertin işi 03", OrderNumber =3, Color="yellow"} }
+                            {new Work{ Title= "Mertin işi 01", OrderNumber =1, Color="red"} },
+                            {new Work{ Title= "Mertin işi 02", OrderNumber =2, Color="blue"} },
+                            {new Work{ Title= "Mertin işi 03", OrderNumber =3, Color="yellow"} }
                         }
                 },
-                new Card {
+                new List {
                         Title = "Card 2",
-                        CardItems = new List<CardItem>
+                        Work = new List<Work>
                         {
-                            {new CardItem{ Title= "Ahmetin işi 01", OrderNumber =1, Color="red"} },
+                            {new Work{ Title= "Ahmetin işi 01", OrderNumber =1, Color="red"} },
                         }
                 },
-                new Card {
+                new List {
                         Title = "Card 3",
-                        CardItems = new List<CardItem>()
+                        Work = new List<Work>()
                 }
             };
         }
