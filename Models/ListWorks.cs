@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace ProjectManagement.Models
 {
-    public class CardItem
+    public class ListWorks
     {
         public string Title { get; set; }
         public int OrderNumber { get; set; }
-        public string Color { get; set; }
+        public int Priority { get; set; }
     }
 }
