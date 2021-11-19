@@ -14,29 +14,29 @@ namespace ProjectManagement.Controllers
             return View(GetList());
         }
 
-        private List<List> GetList()
+        private List<Work> GetCard()
         {
             return new List<Work>
             {
-                new List {
+                new Work {
                         Title = "Card 1",
-                        Work = new List<Work>
+                        CardItems = new List<ListWorks>
                         {
-                            {new Work{ Title= "Mertin işi 01", OrderNumber =1, Color="red"} },
-                            {new Work{ Title= "Mertin işi 02", OrderNumber =2, Color="blue"} },
-                            {new Work{ Title= "Mertin işi 03", OrderNumber =3, Color="yellow"} }
+                            {new ListWorks{ Title= "Mertin işi 01", OrderNumber =1, Color="red"} },
+                            {new ListWorks{ Title= "Mertin işi 02", OrderNumber =2, Color="blue"} },
+                            {new ListWorks{ Title= "Mertin işi 03", OrderNumber =3, Color="yellow"} }
                         }
                 },
-                new List {
+                new Work {
                         Title = "Card 2",
-                        Work = new List<Work>
+                        CardItems = new List<ListWorks>
                         {
-                            {new Work{ Title= "Ahmetin işi 01", OrderNumber =1, Color="red"} },
+                            {new ListWorks{ Title= "Ahmetin işi 01", OrderNumber =1, Color="red"} },
                         }
                 },
-                new List {
+                new Work {
                         Title = "Card 3",
-                        Work = new List<Work>()
+                        CardItems = new List<ListWorks>()
                 }
             };
         }
