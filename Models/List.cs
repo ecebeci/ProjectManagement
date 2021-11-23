@@ -8,14 +8,11 @@ namespace ProjectManagement.Models
 {
     public class List
     {
-        public int ID { get; set; }
-
+        public int ListId { get; set; }
         [Required]
-        [StringLength(256)]
+        [StringLength(30)]
         public string Title { get; set; }
-        //public List<Work> Works { get; set; } = new List<Work>();
-
-        public List<Work> Works { get; set; } = new List<Work>()
+        public List<Work> Works { get; set; } = new List<Work>();
     }
 
 }

@@ -1,7 +1,12 @@
 ﻿@model List<List>
 @{
 }
-<div class="container">
+<style>
+    .test1 {
+        overflow-x: auto;
+    }
+</style>
+<div class="container test1" >
     <div class="row">
         @foreach (var list in Model)
         {
@@ -18,15 +23,30 @@
                             </li>
                         }
                     }
-                    else
-                    {
-                        <li class="list-group-item text-muted">
-                            + Add a new work
-                        </li>
-                    }
-
+                    <li class="list-group-item text-muted">
+                        <div id="addWorkButton"> <button class="btn btn-primary" onclick="getElementById('addNewWork').style.display = 'block'; this.style.display = 'none'">+ Add a new work</button> </div>
+                        <div id="addNewWork" style="display:none;">
+                            <input type="text" class="form-control" placeholder="Enter a work name">
+                            <button class="btn btn-primary" value="">Save work</button>
+                            <button class="btn btn-danger " value="" onclick="getElementById('addNewWorkButton').style.display = 'block'; document.getElementById('addNewWork').style.display = 'none';">Cancel</button>
+                        </div>
+                    </li>
                 </ul>
             </div>
         }
+        <div class="col-3">
+            <ul class="list-group">
+                <li class="list-group-item text-muted">
+                    <div id="addListButton"> <button class="btn btn-primary" onclick="getElementById('addNewList').style.display = 'block'; document.getElementById('addListButton').style.display = 'none';">+ Add a new list!</button> </div>
+                    <div id="addNewList" style="display:none;">
+                        <input type="text" class="form-control" placeholder="Enter a list name">
+                        <button class="btn btn-primary" value="">Add List</button>
+                        <button class="btn btn-danger " value="" onclick="getElementById('addListButton').style.display = 'block'; document.getElementById('addNewList').style.display = 'none';">Cancel</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
+
+

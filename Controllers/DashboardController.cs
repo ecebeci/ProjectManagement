@@ -25,10 +25,18 @@ namespace ProjectManagement.Controllers
                 new List {
                         Title = "List 2",
                         Works = new List<Work>()
-    },
+                 },
                 new List {
                         Title = "List 3",
-                        Works = new List<Work>()
+                        Works = new List<Work>{new Work { Title = "Work 1", WorkId= 1} , new Work { Title = "Work 2", WorkId = 2 } }
+                },
+                 new List {
+                        Title = "List 4",
+                        Works = new List<Work>{new Work { Title = "Work 1", WorkId= 1} , new Work { Title = "Work 2", WorkId = 2 } }
+                 },
+               new List {
+                        Title = "List 5",
+                        Works = new List<Work>{new Work { Title = "Work 1", WorkId= 1} , new Work { Title = "Work 2", WorkId = 2 } }
                 }
             };
         }
