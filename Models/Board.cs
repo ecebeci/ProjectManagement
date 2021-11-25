@@ -12,6 +12,10 @@ namespace ProjectManagement.Models
         [Required]
         [StringLength(30)]
         public string Name { get; set; }
-        public List<List> Lists { get; set; } = new List<List>();
+        public string BoardDescription { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public Project Project { get; set; } // Every Board has a one project (one-to-many)
+        public List<List> Lists { get; set; } = new List<List>(); 
     }
 }
