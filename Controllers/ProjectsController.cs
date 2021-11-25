@@ -19,6 +19,14 @@ namespace ProjectManagement.Controllers
             _context = context;
         }
 
+
+        // GET: Projects/Board
+        public IActionResult Board(int id = 1)
+        {
+
+            return View();
+        }
+
         // GET: Projects
         public async Task<IActionResult> Index()
         {
