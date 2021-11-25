@@ -14,11 +14,13 @@ namespace ProjectManagement.Data
             {
             }
 
+      
+
+        // Entities are mapping for ORM
         public DbSet<Project> Project { get; set; }
-        public DbSet<Board> Boards { get; set; }
-        // TODO
-        //public DbSet<List> Lists { get; set; }
-        //public DbSet<Work> Works { get; set; }
+        public DbSet<Board> Board { get; set; }
+        public DbSet<List> List { get; set; }
+        public DbSet<Work> Work { get; set; }
 
     }
 }

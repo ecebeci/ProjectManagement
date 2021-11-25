@@ -38,11 +38,14 @@ namespace ProjectManagement
 
             services.AddDbContext<ProjectsContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("ProjectsContext")));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ProjectsContext projectsContext) // ProjectsContext ProjectsContext dependency injector
         {
+            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -69,6 +72,12 @@ namespace ProjectManagement
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            // seed data
+            if (env.IsDevelopment())
+            {
+                SeedData.Populate(projectsContext);
+            }
         }
     }
 }
