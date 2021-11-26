@@ -1,0 +1,21 @@
+﻿@model ProjectManagement.Models.Project
+
+@{
+    ViewData["Title"] = "Board";
+}
+
+@foreach (var item in Model.Boards)
+{
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">@item.Title</h5>
+            <p class="card-text lead">@item.Project.Name</p>
+            <p>@item.BoardDescription</p>
+            <p class="lead text-info">@item.UpdatedDate</p>
+            <p class="lead text-info">@item.CreatedDate</p>
+        </div>
+    </div>
+    <tr>
+  
+    </tr>
+}
