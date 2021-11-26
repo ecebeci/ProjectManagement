@@ -25,11 +25,11 @@ namespace ProjectManagement.Controllers
         {
             if (id == null)
             {
-                return View();
+                return NotFound();
             }
 
             var project = await _context.Project
-              .Include(b => b.Boards)
+              .Include(b => b.Boards) // Relation!
               .FirstOrDefaultAsync(m => m.ProjectId == id);
 
             if (project == null)
