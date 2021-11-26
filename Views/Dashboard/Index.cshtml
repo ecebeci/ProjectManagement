@@ -15,7 +15,7 @@
                 <ul class="list-group">
                     @if (list.Works.Count > 0)
                     {
-                        @foreach (var item in list.Works.OrderBy(x => x.OrderNumber))
+                        @foreach (var item in list.Works.OrderBy(x => x.Priority))
                         {
                             <li class="list-group-item">
                                 <span style="" class="col-3">&nbsp;&nbsp;</span>

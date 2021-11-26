@@ -11,7 +11,7 @@ namespace ProjectManagement.Models
         public int BoardId { get; set; }
         [Required]
         [StringLength(30)]
-        public string Name { get; set; }
+        public string Title { get; set; }
         public string BoardDescription { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }

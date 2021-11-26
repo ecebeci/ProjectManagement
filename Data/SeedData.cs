@@ -14,20 +14,21 @@ namespace ProjectManagement.Data
 
 			if (project == null)
 			{
-				project = new Project { Name = "Anonymous" };
+				project = new Project { Name = "Project Test" };
 				ProjectsContext.Add(project);
 			}
 
-			for (int i = 1; i <= 1000; i++)
+			for (int i = 1; i <= 5; i++)
 			{
 				ProjectsContext.Board.Add(
 					new Board
 					{
-						Name = "Board " + i,
-						BoardDescription = "Book description " + i,
+						Title = "Board " + i,
+						BoardDescription = "Board description " + i,
+						CreatedDate = DateTime.Now,
 						Project = project
 					}
-				);
+				); ;
 			}
 
 			ProjectsContext.SaveChanges();

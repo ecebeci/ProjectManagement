@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectManagement.Data;
 
-namespace ProjectManagement.Migrations
+namespace ProjectManagement.Data.Migrations
 {
     [DbContext(typeof(ProjectsContext))]
-    [Migration("20211125182007_Initial")]
-    partial class Initial
+    partial class ProjectsContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,13 +32,13 @@ namespace ProjectManagement.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
-
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -62,16 +60,13 @@ namespace ProjectManagement.Migrations
                     b.Property<int?>("BoardId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("OrderNumber")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("ListId");
 
@@ -116,16 +111,16 @@ namespace ProjectManagement.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsDone")
-                        .HasColumnType("bit");
+                    b.Property<DateTime?>("Deadline")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ListId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderNumber")
+                    b.Property<int>("Priority")
                         .HasColumnType("int");
 
-                    b.Property<int>("Priority")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")

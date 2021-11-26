@@ -14,10 +14,10 @@ namespace ProjectManagement.Models
         public string Title { get; set; }
         public int ListId { get; set; }
         public int Priority { get; set; }
-        public int OrderNumber { get; set; }
-        public bool IsDone { get; set; }
+        public int Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public DateTime? Deadline { get; set; }
         public List List { get; set; }
     }
 }

@@ -16,5 +16,6 @@ namespace ProjectManagement.Models
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public List<Board> Boards { get; set; } = new List<Board>(); // every project can have multiple Boards, new list must be created
+        
     }
 }

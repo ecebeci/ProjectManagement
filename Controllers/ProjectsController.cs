@@ -20,11 +20,26 @@ namespace ProjectManagement.Controllers
         }
 
 
-        // GET: Projects/Board
-        public IActionResult Board(int id = 1)
+        // GET: Projects/Board/5
+        public async Task<IActionResult> Board(int? id)
         {
+            if (id == null)
+            {
+                return View();
+            }
 
-            return View();
+            var project = await _context.Project
+              .Include(b => b.Boards)
+              .FirstOrDefaultAsync(m => m.ProjectId == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project);
+
+        
         }
 
         // GET: Projects
