@@ -10,7 +10,7 @@ using ProjectManagement.Data;
 namespace ProjectManagement.Data.Migrations
 {
     [DbContext(typeof(ProjectsContext))]
-    [Migration("20211126001751_Initial")]
+    [Migration("20211126211618_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,19 +62,47 @@ namespace ProjectManagement.Data.Migrations
                     b.Property<int?>("BoardId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderNumber")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("ListId");
 
                     b.HasIndex("BoardId");
 
                     b.ToTable("List");
+                });
+
+            modelBuilder.Entity("ProjectManagement.Models.Member", b =>
+                {
+                    b.Property<int>("MemberId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("TitleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("MemberId");
+
+                    b.ToTable("Member");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Project", b =>
@@ -116,7 +144,10 @@ namespace ProjectManagement.Data.Migrations
                     b.Property<DateTime?>("Deadline")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ListId")
+                    b.Property<int?>("ListId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MemberId")
                         .HasColumnType("int");
 
                     b.Property<int>("Priority")
@@ -136,6 +167,8 @@ namespace ProjectManagement.Data.Migrations
                     b.HasKey("WorkId");
 
                     b.HasIndex("ListId");
+
+                    b.HasIndex("MemberId");
 
                     b.ToTable("Work");
                 });
@@ -162,11 +195,15 @@ namespace ProjectManagement.Data.Migrations
                 {
                     b.HasOne("ProjectManagement.Models.List", "List")
                         .WithMany("Works")
-                        .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ListId");
+
+                    b.HasOne("ProjectManagement.Models.Member", "Member")
+                        .WithMany("Works")
+                        .HasForeignKey("MemberId");
 
                     b.Navigation("List");
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Board", b =>
@@ -175,6 +212,11 @@ namespace ProjectManagement.Data.Migrations
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.List", b =>
+                {
+                    b.Navigation("Works");
+                });
+
+            modelBuilder.Entity("ProjectManagement.Models.Member", b =>
                 {
                     b.Navigation("Works");
                 });
