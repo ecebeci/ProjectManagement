@@ -26,6 +26,7 @@ namespace ProjectManagement.Data
 						Title = "Board " + i,
 						BoardDescription = "Board description " + i,
 						CreatedDate = DateTime.Now,
+						UpdatedDate = DateTime.Now,
 						Project = project
 					}
 				); ;
