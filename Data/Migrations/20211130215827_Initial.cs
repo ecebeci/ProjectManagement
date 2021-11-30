@@ -45,7 +45,7 @@ namespace ProjectManagement.Data.Migrations
                     BoardId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     BoardDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -58,7 +58,31 @@ namespace ProjectManagement.Data.Migrations
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectMember",
+                columns: table => new
+                {
+                    MemberId = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectMember", x => new { x.ProjectId, x.MemberId });
+                    table.ForeignKey(
+                        name: "FK_ProjectMember_Member_MemberId",
+                        column: x => x.MemberId,
+                        principalTable: "Member",
+                        principalColumn: "MemberId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProjectMember_Project_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "ProjectId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -80,7 +104,7 @@ namespace ProjectManagement.Data.Migrations
                         column: x => x.BoardId,
                         principalTable: "Board",
                         principalColumn: "BoardId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,13 +130,13 @@ namespace ProjectManagement.Data.Migrations
                         column: x => x.ListId,
                         principalTable: "List",
                         principalColumn: "ListId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Work_Member_MemberId",
                         column: x => x.MemberId,
                         principalTable: "Member",
                         principalColumn: "MemberId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -124,6 +148,11 @@ namespace ProjectManagement.Data.Migrations
                 name: "IX_List_BoardId",
                 table: "List",
                 column: "BoardId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectMember_MemberId",
+                table: "ProjectMember",
+                column: "MemberId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Work_ListId",
@@ -138,6 +167,9 @@ namespace ProjectManagement.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ProjectMember");
+
             migrationBuilder.DropTable(
                 name: "Work");
 

@@ -1,5 +1,4 @@
-﻿@model IEnumerable<ProjectManagement.Models.Project>
-@*IEnumerable has a list*@
+﻿@model List<ProjectManagement.Models.ProjectMember>
 
 @{
     ViewData["Title"] = "Index";
@@ -9,12 +8,14 @@
     <h1 class="display-4 ">Projects</h1>
     <a asp-action="Create" class="btn btn-primary">Create a New Project</a>
 </div>
-
+Welcome @User.Identity.Name;
 
 <div class="container">
     <div class="row">
-        @foreach (Project p in Model)
+        @foreach (ProjectMember pm in Model)
         {
+            var p = pm.Project;
+
             <div class="col-lg-6 mb-4">
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">
@@ -36,6 +37,6 @@
                     </div>
                 </div>
             </div>
-        }
+            }
     </div>
     </div>

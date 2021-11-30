@@ -9,18 +9,18 @@ namespace ProjectManagement.Models
     public class Board
     {
         public int BoardId { get; set; }
+
         public int ProjectId { get; set; } // daha sonra kullanilir
+        public Project Project { get; set; } // Every Board has a one project (one-to-many)
 
         [Required]
-        [StringLength(100)] // Think about that
+        [StringLength(256)] // Think about that
         public string Title { get; set; }
         public string BoardDescription { get; set; }
 
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
 
-
-        public Project Project { get; set; } // Every Board has a one project (one-to-many)
         public ICollection<List> Lists { get; set; } 
     }
 }

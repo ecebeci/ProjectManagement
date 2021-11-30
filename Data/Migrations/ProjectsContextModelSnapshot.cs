@@ -37,8 +37,8 @@ namespace ProjectManagement.Data.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -129,6 +129,21 @@ namespace ProjectManagement.Data.Migrations
                     b.ToTable("Project");
                 });
 
+            modelBuilder.Entity("ProjectManagement.Models.ProjectMember", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "MemberId");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("ProjectMember");
+                });
+
             modelBuilder.Entity("ProjectManagement.Models.Work", b =>
                 {
                     b.Property<int>("WorkId")
@@ -176,7 +191,7 @@ namespace ProjectManagement.Data.Migrations
                     b.HasOne("ProjectManagement.Models.Project", "Project")
                         .WithMany("Boards")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -187,10 +202,29 @@ namespace ProjectManagement.Data.Migrations
                     b.HasOne("ProjectManagement.Models.Board", "Boards")
                         .WithMany("Lists")
                         .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Boards");
+                });
+
+            modelBuilder.Entity("ProjectManagement.Models.ProjectMember", b =>
+                {
+                    b.HasOne("ProjectManagement.Models.Member", "Member")
+                        .WithMany("ProjectMembers")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectManagement.Models.Project", "Project")
+                        .WithMany("ProjectMembers")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Work", b =>
@@ -198,13 +232,13 @@ namespace ProjectManagement.Data.Migrations
                     b.HasOne("ProjectManagement.Models.List", "List")
                         .WithMany("Works")
                         .HasForeignKey("ListId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ProjectManagement.Models.Member", "Member")
                         .WithMany("Works")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("List");
@@ -224,12 +258,16 @@ namespace ProjectManagement.Data.Migrations
 
             modelBuilder.Entity("ProjectManagement.Models.Member", b =>
                 {
+                    b.Navigation("ProjectMembers");
+
                     b.Navigation("Works");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Project", b =>
                 {
                     b.Navigation("Boards");
+
+                    b.Navigation("ProjectMembers");
                 });
 #pragma warning restore 612, 618
         }

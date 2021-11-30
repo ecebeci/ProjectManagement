@@ -14,7 +14,32 @@ namespace ProjectManagement.Data
             {
             }
 
-      
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // setting up many to many relationship
+            modelBuilder.Entity<ProjectMember>()
+                .HasKey(pm => new { pm.ProjectId, pm.MemberId }); // two primary keys
+
+            modelBuilder.Entity<ProjectMember>()
+               .HasOne(pm => pm.Project)
+               .WithMany(p => p.ProjectMembers)
+               .HasForeignKey(pm => pm.ProjectId);
+
+            modelBuilder.Entity<ProjectMember>()
+                .HasOne(pm => pm.Member)
+                .WithMany(p => p.ProjectMembers)
+                .HasForeignKey(pm => pm.MemberId);
+
+            var foreignKeysWithCascadeDelete = modelBuilder.Model.GetEntityTypes()
+             .SelectMany(t => t.GetForeignKeys())
+             .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+            foreach (var fk in foreignKeysWithCascadeDelete)
+            {
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
+        }
 
         // Entities are mapping for ORM
         public DbSet<Project> Project { get; set; }
@@ -23,5 +48,6 @@ namespace ProjectManagement.Data
         public DbSet<Work> Work { get; set; }
 
         public DbSet<Member> Member { get; set; }
+        public DbSet<ProjectMember> ProjectMember { get; set; }
     }
 }

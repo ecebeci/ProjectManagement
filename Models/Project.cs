@@ -13,11 +13,15 @@ namespace ProjectManagement.Models
         [Required]
         [StringLength(256)]
         public string Name { get; set; }
+
         public int ManagerId { get; set; }
 
         public DateTime CreatedDate { get; set; }
+
         public DateTime? UpdatedDate { get; set; }
 
         public ICollection<Board> Boards { get; set; }// every project can have multiple Boards, new list must be created
+
+        public ICollection<ProjectMember> ProjectMembers { get; set; }
     }
 }

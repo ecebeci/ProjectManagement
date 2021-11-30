@@ -19,22 +19,9 @@ namespace ProjectManagement.Data
 		internal static void Populate(ProjectsContext ProjectsContext)
 		{
 			Project project = ProjectsContext.Project.FirstOrDefault();
-			//Project project2 = ProjectsContext.Project.FirstOrDefault();
 
 			if (project == null)
 			{
-				// Populate Member
-				for (int i = 1; i <= 10; i++)
-				{
-					ProjectsContext.Member.Add(
-						new Member
-						{
-							Username = "User" + i,
-							Name = "Name of " + i,
-						}
-					); ;
-				}
-
 				project = new Project { Name = "A Mobile App Development Project", ManagerId=0 };
 				ProjectsContext.Add(project);
 
@@ -66,9 +53,30 @@ namespace ProjectManagement.Data
 					);
 				}
 
+
 				ProjectsContext.SaveChanges();
 			}
-	
+
+			Member member = ProjectsContext.Member.FirstOrDefault();
+			if (member == null)
+			{
+				member = new Member { Username = "admin@ipg.pt", Name = "admin" };
+				ProjectsContext.Add(member);
+				member = new Member { Username = "john@ipg.pt", Name = "John Smith" };
+				ProjectsContext.Add(member);
+				// Populate Member
+				for (int i = 1; i <= 10; i++)
+				{
+					ProjectsContext.Member.Add(
+						new Member
+						{
+							Username = "User" + i,
+							Name = "Name of " + i,
+						}
+					); ;
+				}
+				ProjectsContext.SaveChanges();
+			}
 		}
 
 		internal static void CreateDefaultAdmin(UserManager<IdentityUser> userManager)

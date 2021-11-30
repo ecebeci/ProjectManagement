@@ -43,14 +43,25 @@ namespace ProjectManagement.Controllers
             }
 
             return View(project);
-
-        
         }
 
         // GET: Projects
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Project.ToListAsync());
+
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return RedirectToAction("NotAuthorized");
+            }
+
+            var memberProjects = await _context.ProjectMember
+             .Include(b => b.Project) // include project (many - (to) - many)
+             .Where(m => m.MemberId == member.MemberId)
+             .ToListAsync();
+
+
+            return View(memberProjects);
         }
 
         // GET: Projects/Details/5
