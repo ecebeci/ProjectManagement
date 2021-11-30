@@ -32,7 +32,7 @@ namespace ProjectManagement.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ProjectId")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -57,7 +57,7 @@ namespace ProjectManagement.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BoardId")
+                    b.Property<int>("BoardId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -142,10 +142,10 @@ namespace ProjectManagement.Data.Migrations
                     b.Property<DateTime?>("Deadline")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ListId")
+                    b.Property<int>("ListId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MemberId")
+                    b.Property<int>("MemberId")
                         .HasColumnType("int");
 
                     b.Property<int>("Priority")
@@ -175,29 +175,37 @@ namespace ProjectManagement.Data.Migrations
                 {
                     b.HasOne("ProjectManagement.Models.Project", "Project")
                         .WithMany("Boards")
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Project");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.List", b =>
                 {
-                    b.HasOne("ProjectManagement.Models.Board", "Board")
+                    b.HasOne("ProjectManagement.Models.Board", "Boards")
                         .WithMany("Lists")
-                        .HasForeignKey("BoardId");
+                        .HasForeignKey("BoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Board");
+                    b.Navigation("Boards");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Work", b =>
                 {
                     b.HasOne("ProjectManagement.Models.List", "List")
                         .WithMany("Works")
-                        .HasForeignKey("ListId");
+                        .HasForeignKey("ListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ProjectManagement.Models.Member", "Member")
                         .WithMany("Works")
-                        .HasForeignKey("MemberId");
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("List");
 

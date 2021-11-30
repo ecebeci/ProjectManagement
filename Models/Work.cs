@@ -10,13 +10,13 @@ namespace ProjectManagement.Models
     {
         public int WorkId { get; set; }
 
-        // public int MemberId { get; set; } TODO: Implement Member Class
+        public int ListId { get; set; }
+        public int MemberId { get; set; } 
 
         [Required]
         [StringLength(512)]
         public string Title { get; set; }
 
-        //public int ListId { get; set; }
         public int Priority { get; set; }
         public int Status { get; set; } 
 

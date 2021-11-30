@@ -9,6 +9,7 @@ namespace ProjectManagement.Models
     public class List
     {
         public int ListId { get; set; }
+        public int BoardId { get; set; } // daha sonra kullanilir
 
         [Required]
         [StringLength(30)] // Think about that
@@ -17,8 +18,8 @@ namespace ProjectManagement.Models
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
 
-        public Board Board { get; set; }
-        public List<Work> Works { get; set; } = new List<Work>();
+        public Board Boards { get; set; }
+        public ICollection<Work> Works { get; set; } 
     }
 
 }

@@ -9,6 +9,7 @@ namespace ProjectManagement.Models
     public class Project
     {
         public int ProjectId { get; set; }
+      
         [Required]
         [StringLength(256)]
         public string Name { get; set; }

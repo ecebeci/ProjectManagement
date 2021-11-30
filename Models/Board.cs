@@ -9,6 +9,7 @@ namespace ProjectManagement.Models
     public class Board
     {
         public int BoardId { get; set; }
+        public int ProjectId { get; set; } // daha sonra kullanilir
 
         [Required]
         [StringLength(30)] // Think about that
@@ -17,6 +18,7 @@ namespace ProjectManagement.Models
 
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+
 
         public Project Project { get; set; } // Every Board has a one project (one-to-many)
         public ICollection<List> Lists { get; set; } 
