@@ -10,7 +10,7 @@ using ProjectManagement.Data;
 namespace ProjectManagement.Data.Migrations
 {
     [DbContext(typeof(ProjectsContext))]
-    [Migration("20211130215827_Initial")]
+    [Migration("20211130233654_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -128,6 +128,8 @@ namespace ProjectManagement.Data.Migrations
 
                     b.HasKey("ProjectId");
 
+                    b.HasIndex("ManagerId");
+
                     b.ToTable("Project");
                 });
 
@@ -210,6 +212,17 @@ namespace ProjectManagement.Data.Migrations
                     b.Navigation("Boards");
                 });
 
+            modelBuilder.Entity("ProjectManagement.Models.Project", b =>
+                {
+                    b.HasOne("ProjectManagement.Models.Member", "Manager")
+                        .WithMany("Projects")
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Manager");
+                });
+
             modelBuilder.Entity("ProjectManagement.Models.ProjectMember", b =>
                 {
                     b.HasOne("ProjectManagement.Models.Member", "Member")
@@ -261,6 +274,8 @@ namespace ProjectManagement.Data.Migrations
             modelBuilder.Entity("ProjectManagement.Models.Member", b =>
                 {
                     b.Navigation("ProjectMembers");
+
+                    b.Navigation("Projects");
 
                     b.Navigation("Works");
                 });

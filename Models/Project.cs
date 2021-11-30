@@ -15,6 +15,7 @@ namespace ProjectManagement.Models
         public string Name { get; set; }
 
         public int ManagerId { get; set; }
+        public Member Manager { get; set; } // For just Project Manager
 
         public DateTime CreatedDate { get; set; }
 

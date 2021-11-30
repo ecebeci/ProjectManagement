@@ -5,10 +5,9 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4 ">Projects</h1>
+    <h1 class="display-4 ">@User.Identity.Name's Projects</h1>
     <a asp-action="Create" class="btn btn-primary">Create a New Project</a>
 </div>
-Welcome @User.Identity.Name;
 
 <div class="container">
     <div class="row">
@@ -21,7 +20,8 @@ Welcome @User.Identity.Name;
                     <img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">
                     <div class="card-body">
                         <h5 class="card-title">@p.Name</h5>
-                        <p class="card-text"></p>
+                        <p class="card-text">Manager Name: @pm.Project.Manager.Name </p>
+                        <p class="card-text">Last Updated Date: @pm.Project.UpdatedDate </p>
                         <div class="row">
                             <a asp-action="Board" asp-route-id="@p.ProjectId" class="btn btn-primary btn-block">View Boards</a>
                         </div>

@@ -36,6 +36,12 @@ namespace ProjectManagement.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Project", x => x.ProjectId);
+                    table.ForeignKey(
+                        name: "FK_Project_Member_ManagerId",
+                        column: x => x.ManagerId,
+                        principalTable: "Member",
+                        principalColumn: "MemberId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -150,6 +156,11 @@ namespace ProjectManagement.Data.Migrations
                 column: "BoardId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Project_ManagerId",
+                table: "Project",
+                column: "ManagerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectMember_MemberId",
                 table: "ProjectMember",
                 column: "MemberId");
@@ -177,13 +188,13 @@ namespace ProjectManagement.Data.Migrations
                 name: "List");
 
             migrationBuilder.DropTable(
-                name: "Member");
-
-            migrationBuilder.DropTable(
                 name: "Board");
 
             migrationBuilder.DropTable(
                 name: "Project");
+
+            migrationBuilder.DropTable(
+                name: "Member");
         }
     }
 }

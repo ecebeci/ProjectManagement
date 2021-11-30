@@ -13,16 +13,40 @@ namespace ProjectManagement.Data
 		private const string ADMIN_PASS = "Secret123$";
 
 		private const string ROLE_ADMINISTRATOR = "admin";
-		//private const string ROLE_PROJECT_MANAGER = "project_manager";
+		//private const string ROLE_PROJECT_MANAGER = "project_manager"; //not usable for our project
 		private const string ROLE_MEMBER = "member";
 
 		internal static void Populate(ProjectsContext ProjectsContext)
 		{
+			Member member = ProjectsContext.Member.FirstOrDefault();
+			if (member == null)
+			{
+				// Populate Member
+				for (int i = 1; i <= 10; i++)
+				{
+					ProjectsContext.Member.Add(
+						new Member
+						{
+							Username = "User" + i,
+							Name = "Name of " + i,
+						}
+					); ;
+				}
+
+				member = new Member { Username = "admin@ipg.pt", Name = "admin" };
+				ProjectsContext.Add(member);
+				member = new Member { Username = "john@ipg.pt", Name = "John Smith" };
+				ProjectsContext.Add(member);
+
+
+				ProjectsContext.SaveChanges();
+			}
+
 			Project project = ProjectsContext.Project.FirstOrDefault();
 
 			if (project == null)
 			{
-				project = new Project { Name = "A Mobile App Development Project", ManagerId=0 };
+				project = new Project { Name = "A Mobile App Development Project", ManagerId=1 };
 				ProjectsContext.Add(project);
 
 				for (int i = 1; i <= 5; i++)
@@ -38,7 +62,7 @@ namespace ProjectManagement.Data
 					);
 				}
 
-				project = new Project { Name = "Analysis Project", ManagerId = 1 };
+				project = new Project { Name = "Analysis Project", ManagerId = 2};
 				ProjectsContext.Add(project);
 				for (int i = 1; i <= 10; i++)
 				{
@@ -52,31 +76,8 @@ namespace ProjectManagement.Data
 						}
 					);
 				}
-
-
 				ProjectsContext.SaveChanges();
-			}
-
-			Member member = ProjectsContext.Member.FirstOrDefault();
-			if (member == null)
-			{
-				member = new Member { Username = "admin@ipg.pt", Name = "admin" };
-				ProjectsContext.Add(member);
-				member = new Member { Username = "john@ipg.pt", Name = "John Smith" };
-				ProjectsContext.Add(member);
-				// Populate Member
-				for (int i = 1; i <= 10; i++)
-				{
-					ProjectsContext.Member.Add(
-						new Member
-						{
-							Username = "User" + i,
-							Name = "Name of " + i,
-						}
-					); ;
-				}
-				ProjectsContext.SaveChanges();
-			}
+			}	
 		}
 
 		internal static void CreateDefaultAdmin(UserManager<IdentityUser> userManager)
