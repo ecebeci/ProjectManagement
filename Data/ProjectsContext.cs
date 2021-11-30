@@ -22,5 +22,6 @@ namespace ProjectManagement.Data
         public DbSet<List> List { get; set; }
         public DbSet<Work> Work { get; set; }
 
+        public DbSet<Member> Member { get; set; }
     }
 }
