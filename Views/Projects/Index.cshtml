@@ -1,44 +1,45 @@
 ﻿@model IEnumerable<ProjectManagement.Models.Project>
+@*IEnumerable has a list*@
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="text-center">
+    <h1 class="display-4 ">Projects</h1>
+    <a asp-action="Create" class="btn btn-primary">Create New Project</a>
+</div>
+
 
 <p>
-    <a asp-action="Create">Create New</a>
+
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ManagerId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
- 
-           
-            <td>
-                @Html.DisplayFor(modelItem => item.ManagerId)
-            </td>
-            <td>
-                <a asp-action="Board" asp-route-id="@item.ProjectId">View Boards</a> |
-                <a asp-action="Edit" asp-route-id="@item.ProjectId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProjectId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProjectId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="container">
+    <div class="row">
+        @foreach (Project p in Model)
+        {
+            <div class="col-lg-6 mb-4">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">@p.Name</h5>
+                        <p class="card-text"></p>
+                        <div class="row">
+                            <a asp-action="Board" asp-route-id="@p.ProjectId" class="btn btn-primary btn-block">View Boards</a>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <a asp-action="Edit" asp-route-id="@p.ProjectId" class="btn btn-secondary ">Edit Project</a>
+
+                                <a asp-action="Details" asp-route-id="@p.ProjectId" class="btn btn-info">Details</a>
+
+                                <a asp-action="Delete" asp-route-id="@p.ProjectId" class="btn btn-danger">Delete Project</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    </div>

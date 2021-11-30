@@ -12,9 +12,9 @@ namespace ProjectManagement.Models
 
         [Required]
         [StringLength(15)]
-        public string UserName { get; set; }
+        public string Username { get; set; }
         [Required]
-        [StringLength(20)]
+        [StringLength(512)]
         public string Name { get; set; }
     
         /*[Required]

@@ -12,7 +12,7 @@ namespace ProjectManagement.Models
         public int BoardId { get; set; } // daha sonra kullanilir
 
         [Required]
-        [StringLength(30)] // Think about that
+        [StringLength(512)] 
         public string Title { get; set; }
 
         public DateTime CreatedDate { get; set; }

@@ -15,10 +15,23 @@ namespace ProjectManagement.Data
 
 			if (project == null)
 			{
-				project = new Project { Name = "A Mobile App Development Project" };
+				// Populate Member
+				for (int i = 1; i <= 10; i++)
+				{
+					ProjectsContext.Member.Add(
+						new Member
+						{
+							Username = "User" + i,
+							Name = "Name of " + i,
+						}
+					); ;
+				}
+
+				project = new Project { Name = "A Mobile App Development Project", ManagerId=0 };
 				ProjectsContext.Add(project);
-				project2 = new Project { Name = "Analysis Project" };
+				project2 = new Project { Name = "Analysis Project", ManagerId = 1 };
 				ProjectsContext.Add(project2);
+
 
 				for (int i = 1; i <= 5; i++)
 				{
@@ -45,6 +58,7 @@ namespace ProjectManagement.Data
 						}
 					);
 				}
+
 				ProjectsContext.SaveChanges();
 			}
 	
