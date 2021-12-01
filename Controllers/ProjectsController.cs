@@ -46,13 +46,14 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Projects
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Index()
         {
 
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
             if (member == null)
             {
-                return RedirectToAction("NotAuthorized");
+                return NotFound();
             }
 
             var memberProjects = await _context.ProjectMember
@@ -93,7 +94,7 @@ namespace ProjectManagement.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        // [Authorize(Roles = "member")] 
+        [Authorize(Roles = "member")] 
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProjectId,Name")] Project project)
         {

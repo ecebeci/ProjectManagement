@@ -13,25 +13,23 @@
     <div class="row">
         @foreach (ProjectMember pm in Model)
         {
-            var p = pm.Project;
-
             <div class="col-lg-6 mb-4">
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">@p.Name</h5>
+                        <h5 class="card-title">@pm.Project.Name</h5> 
                         <p class="card-text">Manager Name: @pm.Project.Manager.Name </p>
                         <p class="card-text">Last Updated Date: @pm.Project.UpdatedDate </p>
                         <div class="row">
-                            <a asp-action="Board" asp-route-id="@p.ProjectId" class="btn btn-primary btn-block">View Boards</a>
+                            <a asp-action="Board" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary btn-block">View Boards</a>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <a asp-action="Edit" asp-route-id="@p.ProjectId" class="btn btn-secondary ">Edit Project</a>
+                                <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-secondary ">Edit Project</a>
 
-                                <a asp-action="Details" asp-route-id="@p.ProjectId" class="btn btn-info">Details</a>
+                                <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info">Details</a>
 
-                                <a asp-action="Delete" asp-route-id="@p.ProjectId" class="btn btn-danger">Delete Project</a>
+                                <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
                             </div>
                         </div>
                     </div>

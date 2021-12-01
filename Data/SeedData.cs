@@ -13,7 +13,7 @@ namespace ProjectManagement.Data
 		private const string ADMIN_PASS = "Secret123$";
 
 		private const string ROLE_ADMINISTRATOR = "admin";
-		//private const string ROLE_PROJECT_MANAGER = "project_manager"; //not usable for our project
+		
 		private const string ROLE_MEMBER = "member";
 
 		internal static void Populate(ProjectsContext ProjectsContext)
@@ -21,8 +21,17 @@ namespace ProjectManagement.Data
 			Member member = ProjectsContext.Member.FirstOrDefault();
 			if (member == null)
 			{
+				member = new Member { Username = "admin@ipg.pt", Name = "admin" };
+				ProjectsContext.Add(member);
+				member = new Member { Username = "john@ipg.pt", Name = "John Smith" };
+				ProjectsContext.Add(member);
+				member = new Member { Username = "emre@ipg.pt", Name = "Emre Cebeci" };
+				ProjectsContext.Add(member);
+				member = new Member { Username = "jane@ipg.pt", Name = "Jane Doe" };
+				ProjectsContext.Add(member);
+
 				// Populate Member
-				for (int i = 1; i <= 10; i++)
+				/*for (int i = 1; i <= 10; i++)
 				{
 					ProjectsContext.Member.Add(
 						new Member
@@ -31,13 +40,7 @@ namespace ProjectManagement.Data
 							Name = "Name of " + i,
 						}
 					); ;
-				}
-
-				member = new Member { Username = "admin@ipg.pt", Name = "admin" };
-				ProjectsContext.Add(member);
-				member = new Member { Username = "john@ipg.pt", Name = "John Smith" };
-				ProjectsContext.Add(member);
-
+				}*/
 
 				ProjectsContext.SaveChanges();
 			}
@@ -76,6 +79,28 @@ namespace ProjectManagement.Data
 						}
 					);
 				}
+
+				project = new Project { Name = "Construction Project", ManagerId = 2 };
+				ProjectsContext.Add(project);
+				for (int i = 1; i <= 10; i++)
+				{
+					ProjectsContext.Board.Add(
+						new Board
+						{
+							Title = "Board " + i,
+							BoardDescription = "Board description for " + i,
+							Project = project,
+							CreatedDate = DateTime.Now
+						}
+					);
+				}
+
+				// Add Members for each Project
+				ProjectsContext.Add(new ProjectMember { MemberId = 2, ProjectId = 2 });
+				ProjectsContext.Add(new ProjectMember { MemberId = 2, ProjectId = 3 });
+				ProjectsContext.Add(new ProjectMember { MemberId = 3, ProjectId = 2 });
+				ProjectsContext.Add(new ProjectMember { MemberId = 4, ProjectId = 2 });
+
 				ProjectsContext.SaveChanges();
 			}	
 		}
@@ -107,13 +132,14 @@ namespace ProjectManagement.Data
 		internal static void PopulateUsers(UserManager<IdentityUser> userManager)
 		{
 			EnsureUserIsCreatedAsync(userManager, "john@ipg.pt", "Secret123$", ROLE_MEMBER).Wait();
-			//EnsureUserIsCreatedAsync(userManager, "mary@ipg.pt", "Secret123$", ROLE_PROJECT_MANAGER).Wait();
+			EnsureUserIsCreatedAsync(userManager, "emre@ipg.pt", "Secret123$", ROLE_MEMBER).Wait();
+			EnsureUserIsCreatedAsync(userManager, "jane@ipg.pt", "Secret123$", ROLE_MEMBER).Wait();
+			
 		}
 
 		internal static void CreateRoles(RoleManager<IdentityRole> roleManager)
 		{
 			EnsureRoleIsCreatedAsync(roleManager, ROLE_ADMINISTRATOR).Wait();
-			// EnsureRoleIsCreatedAsync(roleManager, ROLE_PROJECT_MANAGER).Wait();
 			EnsureRoleIsCreatedAsync(roleManager, ROLE_MEMBER).Wait();
 		}
 
