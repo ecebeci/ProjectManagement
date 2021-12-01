@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +15,13 @@ namespace ProjectManagement.Controllers
     public class ProjectsController : Controller
     {
         private readonly ProjectsContext _context;
+       // private readonly UserManager<IdentityUser> _userManager;
 
-        public ProjectsController(ProjectsContext context)
+        public ProjectsController(ProjectsContext context) //UserManager<IdentityUser> userManager
         {
             _context = context;
+         //   _userManager = userManager;
+
         }
 
 
@@ -38,14 +43,26 @@ namespace ProjectManagement.Controllers
             }
 
             return View(project);
-
-        
         }
 
         // GET: Projects
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Project.ToListAsync());
+
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var memberProjects = await _context.ProjectMember
+             .Include(b => b.Project) // include project (many - (to) - many)
+             .Where(m => m.MemberId == member.MemberId)
+             .ToListAsync();
+
+
+            return View(memberProjects);
         }
 
         // GET: Projects/Details/5
@@ -67,6 +84,7 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "member")]
         public IActionResult Create()
         {
             return View();
@@ -76,12 +94,27 @@ namespace ProjectManagement.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "member")] 
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectId,Name,ManagerId")] Project project)
+        public async Task<IActionResult> Create([Bind("ProjectId,Name")] Project project)
         {
             if (ModelState.IsValid)
             {
+                //var user = await _userManager.GetUserAsync(User);
+                //var userId = user?.Id;
+
+                // user ekle seeddata da ayrica register oldugunda da member class a baglanmali?
+         
+                Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name) ;
+                if(member == null)
+                {
+                    return NotFound();
+                }
+
+                project.ManagerId = member.MemberId;
+
                 _context.Add(project);
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

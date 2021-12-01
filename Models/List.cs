@@ -9,16 +9,18 @@ namespace ProjectManagement.Models
     public class List
     {
         public int ListId { get; set; }
-        public int BoardId { get; set; } // daha sonra kullanilir
+
+        public int BoardId { get; set; } 
+        public Board Boards { get; set; }
 
         [Required]
         [StringLength(512)] 
         public string Title { get; set; }
 
         public DateTime CreatedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
 
-        public Board Boards { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+       
         public ICollection<Work> Works { get; set; } 
     }
 
