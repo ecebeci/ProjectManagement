@@ -57,10 +57,15 @@ namespace ProjectManagement.Controllers
             }
 
             var memberProjects = await _context.ProjectMember
-             .Include(b => b.Project) // include project (many - (to) - many)
              .Where(m => m.MemberId == member.MemberId)
+             .Include(b => b.Project) // include project (many - (to) - many)
              .ToListAsync();
+             
 
+            if (memberProjects.Count == 0)
+            {
+                return View("Create");
+            }
 
             return View(memberProjects);
         }
@@ -115,7 +120,23 @@ namespace ProjectManagement.Controllers
 
                 _context.Add(project);
 
+                await _context.SaveChangesAsync(); // save, before to use created id's
+
+                // find new project's id (it is important!)
+                Project projectAdded = await _context.Project.FirstOrDefaultAsync(m => m.Name == project.Name);
+                if (projectAdded == null)
+                {
+                    return NotFound();
+                }
+
+                _context.Add(new ProjectMember { 
+                    MemberId = member.MemberId , 
+                    ProjectId = projectAdded.ProjectId // you can't use "project.ProjectId" because id doesnt know (before saving db) that will give error
+                });; // add person to many to many
+
+
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(project);
