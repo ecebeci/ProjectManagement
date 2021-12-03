@@ -101,6 +101,7 @@ namespace ProjectManagement.Data
 				ProjectsContext.Add(new ProjectMember { MemberId = 3, ProjectId = 2 });
 				ProjectsContext.Add(new ProjectMember { MemberId = 4, ProjectId = 2 });
 
+
 				ProjectsContext.SaveChanges();
 			}	
 		}

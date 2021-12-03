@@ -64,7 +64,7 @@ namespace ProjectManagement.Controllers
              .ToListAsync();
             
 
-            if (memberProjects.Count == 0)
+            if (memberProjects.Count == 0) 
             {
                 return View("Create");
             }
@@ -230,6 +230,17 @@ namespace ProjectManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
+            // Delete Board Foreign Keys
+            var Boards = await _context.Board.Where(x => x.ProjectId == id).ToListAsync();
+            foreach (Board b in Boards)
+            {
+                if (b != null)
+                {
+                    _context.Board.Remove(b);
+                }
+            }
+
             // Delete Matched Foreign Key (ProjectId) Rows on ProjectMember Before deleting a project row
             var projectMembers = await _context.ProjectMember.Where(x => x.ProjectId == id).ToListAsync();
             foreach(ProjectMember pm in projectMembers)
