@@ -16,11 +16,10 @@ namespace ProjectManagement.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // one-to-many for icollection and int id Project.ManagerId and Project.Manager.xxx mapping
-             modelBuilder.Entity<Member>()
-                 .HasMany(p => p.Projects)
-                 .WithOne(p => p.Manager)
-                 .IsRequired()
+            // one-to-one for each project
+             modelBuilder.Entity<Project>()
+                 .HasOne(p => p.Manager)
+                 .WithMany(p => p.Projects)
                  .HasForeignKey(p => p.ManagerId);
 
             // setting up many to many relationship

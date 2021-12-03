@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectManagement.Data;
 using ProjectManagement.Models;
+using ProjectManagement.Models.ViewModels;
 
 namespace ProjectManagement.Controllers
 {
@@ -58,9 +59,10 @@ namespace ProjectManagement.Controllers
 
             var memberProjects = await _context.ProjectMember
              .Where(m => m.MemberId == member.MemberId)
-             .Include(b => b.Project) // include project (many - (to) - many)
+             .Include(b => b.Member) 
+             .Include(b => b.Project.Manager) // include manager (many - (to) - many)
              .ToListAsync();
-             
+
 
             if (memberProjects.Count == 0)
             {
@@ -120,7 +122,7 @@ namespace ProjectManagement.Controllers
 
                 _context.Add(project);
 
-                await _context.SaveChangesAsync(); // save, before to use created id's
+                await _context.SaveChangesAsync(); // save, before to use new id's
 
                 // find new project's id (it is important!)
                 Project projectAdded = await _context.Project.FirstOrDefaultAsync(m => m.Name == project.Name);
@@ -196,6 +198,7 @@ namespace ProjectManagement.Controllers
         // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+          
             if (id == null)
             {
                 return NotFound();
@@ -208,7 +211,18 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            return View(project);
+            var ProjectMembers = await _context.ProjectMember
+                .Where(x => x.Project == project)
+                .Include(u => u.Member)
+                .ToListAsync();
+
+            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers
+            {
+                Project = project,
+                ProjectMembers = ProjectMembers
+            };
+
+            return View(ProjectProjectMembers);
         }
 
         // POST: Projects/Delete/5
@@ -216,6 +230,16 @@ namespace ProjectManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Delete Matched Foreign Key (ProjectId) Rows on ProjectMember Before deleting a project row
+            var projectMembers = await _context.ProjectMember.Where(x => x.ProjectId == id).ToListAsync();
+            foreach(ProjectMember pm in projectMembers)
+            {
+                if(pm != null)
+                {
+                    _context.ProjectMember.Remove(pm);
+                }
+            }
+
             var project = await _context.Project.FindAsync(id);
             _context.Project.Remove(project);
             await _context.SaveChangesAsync();
