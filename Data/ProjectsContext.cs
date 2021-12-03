@@ -17,11 +17,10 @@ namespace ProjectManagement.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // one-to-one for each project
-             modelBuilder.Entity<Member>()
-                 .HasMany(p => p.Projects)
-                 .WithOne(p => p.Manager)
-                 .HasForeignKey(p => p.ManagerId)
-                 .IsRequired();
+             modelBuilder.Entity<Project>()
+                 .HasOne(p => p.Manager)
+                 .WithMany(p => p.Projects)
+                 .HasForeignKey(p => p.ManagerId);
 
             // setting up many to many relationship
             modelBuilder.Entity<ProjectMember>()

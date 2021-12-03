@@ -60,7 +60,7 @@ namespace ProjectManagement.Controllers
             var memberProjects = await _context.ProjectMember
              .Where(m => m.MemberId == member.MemberId)
              .Include(b => b.Member) 
-             .Include(b => b.Project) // include project (many - (to) - many)
+             .Include(b => b.Project.Manager) // include manager (many - (to) - many)
              .ToListAsync();
             
 
