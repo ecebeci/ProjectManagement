@@ -62,7 +62,7 @@ namespace ProjectManagement.Controllers
              .Include(b => b.Member) 
              .Include(b => b.Project.Manager) // include manager (many - (to) - many)
              .ToListAsync();
-            
+
 
             if (memberProjects.Count == 0) 
             {
