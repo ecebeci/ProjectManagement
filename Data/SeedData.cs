@@ -30,18 +30,6 @@ namespace ProjectManagement.Data
 				member = new Member { Username = "jane@ipg.pt", Name = "Jane Doe" };
 				ProjectsContext.Add(member);
 
-				// Populate Member
-				/*for (int i = 1; i <= 10; i++)
-				{
-					ProjectsContext.Member.Add(
-						new Member
-						{
-							Username = "User" + i,
-							Name = "Name of " + i,
-						}
-					); ;
-				}*/
-
 				ProjectsContext.SaveChanges();
 			}
 
@@ -49,7 +37,11 @@ namespace ProjectManagement.Data
 
 			if (project == null)
 			{
-				project = new Project { Name = "A Mobile App Development Project", ManagerId=1 };
+				project = new Project { 
+					Name = "A Mobile App Development Project", 
+					ManagerId=1 ,
+					CreatedDate = DateTime.Now 
+				};
 				ProjectsContext.Add(project);
 
 				for (int i = 1; i <= 5; i++)
@@ -65,7 +57,11 @@ namespace ProjectManagement.Data
 					);
 				}
 
-				project = new Project { Name = "Analysis Project", ManagerId = 2};
+				project = new Project {
+					Name = "Analysis Project", 
+					ManagerId = 2, 
+					CreatedDate = DateTime.Now 
+				};
 				ProjectsContext.Add(project);
 				for (int i = 1; i <= 10; i++)
 				{
@@ -80,7 +76,11 @@ namespace ProjectManagement.Data
 					);
 				}
 
-				project = new Project { Name = "Construction Project", ManagerId = 2 };
+				project = new Project {
+					Name = "Construction Project",
+					ManagerId = 2 ,
+					CreatedDate = DateTime.Now
+				};
 				ProjectsContext.Add(project);
 				for (int i = 1; i <= 10; i++)
 				{
