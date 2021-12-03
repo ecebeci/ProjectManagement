@@ -77,11 +77,6 @@ namespace ProjectManagement.Controllers
         [Authorize(Roles = "member")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var project = await _context.Project
                 .FirstOrDefaultAsync(m => m.ProjectId == id);
             if (project == null)
@@ -89,7 +84,19 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            return View(project);
+            var ProjectMembers = await _context.ProjectMember
+                .Where(x => x.Project == project)
+                .Include(u => u.Member)
+                .Include(u => u.Project.Manager)
+                .ToListAsync();
+
+            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers
+            {
+                Project = project,
+                ProjectMembers = ProjectMembers
+            };
+
+            return View(ProjectProjectMembers);
         }
 
         // GET: Projects/Create
@@ -229,6 +236,7 @@ namespace ProjectManagement.Controllers
             var ProjectMembers = await _context.ProjectMember
                 .Where(x => x.Project == project)
                 .Include(u => u.Member)
+                .Include(u => u.Project.Manager)
                 .ToListAsync();
 
             ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers
