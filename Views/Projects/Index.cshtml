@@ -8,7 +8,7 @@
     <h1 class="display-4 ">@User.Identity.Name's Projects</h1>
     <a asp-action="Create" class="btn btn-primary">Create a New Project</a>
 </div>
-
+<br />
 <div class="container">
     <div class="row">
         @foreach (ProjectMember pm in Model)
@@ -28,13 +28,15 @@
                                 <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-secondary ">Edit Project</a>
 
                                 <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info">Details</a>
-
+                               
+                                @if(pm.MemberId == pm.Project.ManagerId) { // Show Delete Button to Project's Managers
                                 <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            }
+        }
     </div>
     </div>
