@@ -77,6 +77,11 @@ namespace ProjectManagement.Controllers
         [Authorize(Roles = "member")]
         public async Task<IActionResult> Details(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var project = await _context.Project
                 .FirstOrDefaultAsync(m => m.ProjectId == id);
             if (project == null)
