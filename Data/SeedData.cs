@@ -97,9 +97,8 @@ namespace ProjectManagement.Data
 
 				// Add Members for each Project
 				ProjectsContext.Add(new ProjectMember { MemberId = 2, ProjectId = 2 });
-				ProjectsContext.Add(new ProjectMember { MemberId = 2, ProjectId = 3 });
-				ProjectsContext.Add(new ProjectMember { MemberId = 3, ProjectId = 2 });
-				ProjectsContext.Add(new ProjectMember { MemberId = 4, ProjectId = 2 });
+				ProjectsContext.Add(new ProjectMember { MemberId = 3, ProjectId = 3 });
+				ProjectsContext.Add(new ProjectMember { MemberId = 4, ProjectId = 3 });  
 
 				ProjectsContext.SaveChanges();
 			}	
