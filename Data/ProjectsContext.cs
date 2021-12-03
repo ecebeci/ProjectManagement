@@ -18,7 +18,7 @@ namespace ProjectManagement.Data
         {
             // one-to-one for each project
              modelBuilder.Entity<Project>()
-                 .HasOne(p => p.Manager)
+                 .HasOne(p => p.Manager) // entity framework helps on this lambda variables
                  .WithMany(p => p.Projects)
                  .HasForeignKey(p => p.ManagerId);
 

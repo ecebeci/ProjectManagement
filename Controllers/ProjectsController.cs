@@ -27,6 +27,7 @@ namespace ProjectManagement.Controllers
 
 
         // GET: Projects/Board/5
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Board(int? id)
         {
             if (id == null)
@@ -64,7 +65,7 @@ namespace ProjectManagement.Controllers
              .ToListAsync();
 
 
-            if (memberProjects.Count == 0)
+            if (memberProjects.Count == 0) 
             {
                 return View("Create");
             }
@@ -73,13 +74,9 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Projects/Details/5
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var project = await _context.Project
                 .FirstOrDefaultAsync(m => m.ProjectId == id);
             if (project == null)
@@ -87,7 +84,19 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            return View(project);
+            var ProjectMembers = await _context.ProjectMember
+                .Where(x => x.Project == project)
+                .Include(u => u.Member)
+                .Include(u => u.Project.Manager)
+                .ToListAsync();
+
+            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers
+            {
+                Project = project,
+                ProjectMembers = ProjectMembers
+            };
+
+            return View(ProjectProjectMembers);
         }
 
         // GET: Projects/Create
@@ -101,8 +110,8 @@ namespace ProjectManagement.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize(Roles = "member")] 
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Create([Bind("ProjectId,Name")] Project project)
         {
             if (ModelState.IsValid)
@@ -145,6 +154,7 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -165,6 +175,7 @@ namespace ProjectManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,ManagerId")] Project project)
         {
             if (id != project.ProjectId)
@@ -198,8 +209,14 @@ namespace ProjectManagement.Controllers
         // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-          
+
             if (id == null)
+            {
+                return NotFound();
+            }
+
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
             {
                 return NotFound();
             }
@@ -211,9 +228,15 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            if (member.MemberId != project.ManagerId) // Non-Authorized Access 
+            {
+                return NotFound();
+            }
+
             var ProjectMembers = await _context.ProjectMember
                 .Where(x => x.Project == project)
                 .Include(u => u.Member)
+                .Include(u => u.Project.Manager)
                 .ToListAsync();
 
             ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers
@@ -228,8 +251,20 @@ namespace ProjectManagement.Controllers
         // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
+            // Delete Board Foreign Keys
+            var Boards = await _context.Board.Where(x => x.ProjectId == id).ToListAsync();
+            foreach (Board b in Boards)
+            {
+                if (b != null)
+                {
+                    _context.Board.Remove(b);
+                }
+            }
+
             // Delete Matched Foreign Key (ProjectId) Rows on ProjectMember Before deleting a project row
             var projectMembers = await _context.ProjectMember.Where(x => x.ProjectId == id).ToListAsync();
             foreach(ProjectMember pm in projectMembers)

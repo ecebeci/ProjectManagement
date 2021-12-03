@@ -23,9 +23,6 @@ namespace ProjectManagement.Models
         public string Email { get; set; }
         public string Password { get; set; } */
 
-        [Required]
-        public int TitleId { get; set; }
-
         public ICollection<ProjectMember> ProjectMembers { get; set; }
 
         public ICollection<Project> Projects { get; set; } // For Project ManagerId
