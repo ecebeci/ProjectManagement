@@ -25,7 +25,7 @@ namespace ProjectManagement.Controllers
 
         }
 
-
+        // To be deleted
         // GET: Projects/Board/5
         [Authorize(Roles = "member")]
         public async Task<IActionResult> Board(int? id)
@@ -49,7 +49,7 @@ namespace ProjectManagement.Controllers
 
         // GET: Projects
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string title, int page = 1)
         {
 
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
@@ -58,19 +58,25 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            var memberProjects = await _context.ProjectMember
-             .Where(m => m.MemberId == member.MemberId)
-             .Include(b => b.Member) 
-             .Include(b => b.Project.Manager) // include manager (many - (to) - many)
-             .ToListAsync();
 
+            var memberProjects = await _context.ProjectMember
+             .Where(p => p.MemberId == member.MemberId)
+             .Include(p => p.Member) 
+             .Include(p => p.Project.Manager) // include manager (many - (to) - many)
+             .ToListAsync();
 
             if (memberProjects.Count == 0) 
             {
                 return View("Create");
             }
 
-            return View(memberProjects);
+            var memberProjectsSearched = memberProjects.Where(p => title == null || p.Project.Name.Contains(title)); // search
+
+            return View( new ProjectsListViewModel
+            {
+                ProjectMember = memberProjectsSearched,
+                TitleSearched = title
+            });
         }
 
         // GET: Projects/Details/5
@@ -83,7 +89,7 @@ namespace ProjectManagement.Controllers
             }
 
             var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
+                .FirstOrDefaultAsync(p => p.ProjectId == id);
             if (project == null)
             {
                 return NotFound();

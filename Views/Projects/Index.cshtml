@@ -1,4 +1,4 @@
-﻿@model List<ProjectManagement.Models.ProjectMember>
+﻿@model ProjectsListViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -8,10 +8,25 @@
     <h1 class="display-4 ">@User.Identity.Name's Projects</h1>
     <a asp-action="Create" class="btn btn-primary m-2">Create a New Project</a>
 </div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Search</h5>
+        <form asp-action="Index" method="get">
+            <label for="title" class="control-label">Title</label>
+            <input name="title" type="search" class="form-control" value="@Model.TitleSearched" />
+            <div class="mt-3">
+                <input type="submit" value="Search" class="btn btn-info" />
+                <a asp-action="Index" class="btn btn-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <br />
 <div class="container">
     <div class="row">
-        @foreach (ProjectMember pm in Model)
+        @foreach (ProjectMember pm in Model.ProjectMember)
         {
             <div class="col-lg-6 mb-4">
                 <div class="card" style="width: 18rem;">
