@@ -49,7 +49,7 @@ namespace ProjectManagement.Controllers
 
         // GET: Projects
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Index(string title, int page = 1)
+        public async Task<IActionResult> Index(string name, int page = 1)
         {
 
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
@@ -70,12 +70,12 @@ namespace ProjectManagement.Controllers
                 return View("Create");
             }
 
-            var memberProjectsSearched = memberProjects.Where(p => title == null || p.Project.Name.Contains(title)); // search
+            var memberProjectsSearched = memberProjects.Where(p => name == null || p.Project.Name.Contains(name)); // search
 
             return View( new ProjectsListViewModel
             {
                 ProjectMember = memberProjectsSearched,
-                TitleSearched = title
+                NameSearched = name
             });
         }
 

@@ -9,16 +9,19 @@
     <a asp-action="Create" class="btn btn-primary m-2">Create a New Project</a>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Search</h5>
+<br />
+<div class="container">
+    <div class="form-group row">
+        <h5 class="title">Search</h5>     
         <form asp-action="Index" method="get">
-            <label for="title" class="control-label">Title</label>
-            <input name="title" type="search" class="form-control" value="@Model.TitleSearched" />
-            <div class="mt-3">
-                <input type="submit" value="Search" class="btn btn-info" />
-                <a asp-action="Index" class="btn btn-secondary">Clear</a>
+            <label for="name" class="control-label">Project Name</label>
+            <div class="w-25">
+                <input name="name" type="search" class="form-control " value="@Model.NameSearched" />
             </div>
+                <div class="mt-3">
+                    <input type="submit" value="Search" class="btn btn-info" />
+                    <a asp-action="Index" class="btn btn-secondary">Clear</a>
+                </div>
         </form>
     </div>
 </div>
