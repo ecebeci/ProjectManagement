@@ -8,7 +8,7 @@ namespace ProjectManagement.Models.ViewModels
 	public class ProjectsListViewModel
 	{
 		public IEnumerable<ProjectMember> ProjectMember { get; set; }
-		//public PagingInfo PagingInfo { get; set; }
+		public PagingInfo PagingInfo { get; set; }
 		public string NameSearched { get; set; }
 	}
 }
