@@ -9,6 +9,6 @@ namespace ProjectManagement.Models.ViewModels
 	{
 		public IEnumerable<ProjectMember> ProjectMember { get; set; }
 		//public PagingInfo PagingInfo { get; set; }
-		public string TitleSearched { get; set; }
+		public string NameSearched { get; set; }
 	}
 }
