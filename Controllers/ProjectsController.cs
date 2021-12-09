@@ -25,7 +25,7 @@ namespace ProjectManagement.Controllers
 
         }
 
-
+        // To be deleted
         // GET: Projects/Board/5
         [Authorize(Roles = "member")]
         public async Task<IActionResult> Board(int? id)
@@ -49,7 +49,7 @@ namespace ProjectManagement.Controllers
 
         // GET: Projects
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string name, int page = 1)
         {
 
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
@@ -59,18 +59,44 @@ namespace ProjectManagement.Controllers
             }
 
             var memberProjects = await _context.ProjectMember
-             .Where(m => m.MemberId == member.MemberId)
-             .Include(b => b.Member) 
-             .Include(b => b.Project.Manager) // include manager (many - (to) - many)
+             .Where(p => p.MemberId == member.MemberId)
+             .Include(p => p.Member) 
+             .Include(p => p.Project.Manager) // include manager (many - (to) - many)
              .ToListAsync();
-
 
             if (memberProjects.Count == 0) 
             {
                 return View("Create");
             }
 
-            return View(memberProjects);
+            var memberProjectsSearched = memberProjects.Where(p => name == null || p.Project.Name.Contains(name)); // search
+
+            var pagingInfo = new PagingInfo
+            {
+                CurrentPage = page,
+                TotalItems = memberProjectsSearched.Count()
+            };
+
+            if (pagingInfo.CurrentPage > pagingInfo.TotalPages)
+            {
+                pagingInfo.CurrentPage = pagingInfo.TotalPages;
+            }
+
+            if (pagingInfo.CurrentPage < 1)
+            {
+                pagingInfo.CurrentPage = 1;
+            }
+
+            var memberProjectsSearchedPaginated = memberProjects
+                            .Skip((pagingInfo.CurrentPage - 1) * pagingInfo.PageSize)
+                            .Take(pagingInfo.PageSize);
+
+            return View( new ProjectsListViewModel
+            {
+                ProjectMember = memberProjectsSearchedPaginated,
+                PagingInfo = pagingInfo,
+                NameSearched = name
+            });
         }
 
         // GET: Projects/Details/5
@@ -83,7 +109,7 @@ namespace ProjectManagement.Controllers
             }
 
             var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
+                .FirstOrDefaultAsync(p => p.ProjectId == id);
             if (project == null)
             {
                 return NotFound();
