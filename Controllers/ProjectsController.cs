@@ -58,7 +58,6 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-
             var memberProjects = await _context.ProjectMember
              .Where(p => p.MemberId == member.MemberId)
              .Include(p => p.Member) 
@@ -72,9 +71,30 @@ namespace ProjectManagement.Controllers
 
             var memberProjectsSearched = memberProjects.Where(p => name == null || p.Project.Name.Contains(name)); // search
 
+            var pagingInfo = new PagingInfo
+            {
+                CurrentPage = page,
+                TotalItems = memberProjectsSearched.Count()
+            };
+
+            if (pagingInfo.CurrentPage > pagingInfo.TotalPages)
+            {
+                pagingInfo.CurrentPage = pagingInfo.TotalPages;
+            }
+
+            if (pagingInfo.CurrentPage < 1)
+            {
+                pagingInfo.CurrentPage = 1;
+            }
+
+            var memberProjectsSearchedPaginated = memberProjects
+                            .Skip((pagingInfo.CurrentPage - 1) * pagingInfo.PageSize)
+                            .Take(pagingInfo.PageSize);
+
             return View( new ProjectsListViewModel
             {
-                ProjectMember = memberProjectsSearched,
+                ProjectMember = memberProjectsSearchedPaginated,
+                PagingInfo = pagingInfo,
                 NameSearched = name
             });
         }
