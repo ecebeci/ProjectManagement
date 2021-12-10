@@ -221,12 +221,36 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
             var project = await _context.Project.FindAsync(id);
             if (project == null)
             {
                 return NotFound();
             }
-            return View(project);
+
+            if(project.ManagerId != member.MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant edit.
+            {
+                return NotFound();
+            }
+
+            var ProjectMembers = await _context.ProjectMember
+                .Where(x => x.Project == project)
+                .Include(u => u.Member)
+                .Include(u => u.Project.Manager)
+                .ToListAsync();
+
+            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers // Setting View Model
+            {
+                Project = project,
+                ProjectMembers = ProjectMembers
+            };
+
+            return View(ProjectProjectMembers);
         }
 
         // POST: Projects/Edit/5
