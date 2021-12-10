@@ -180,13 +180,11 @@ namespace ProjectManagement.Controllers
                     return View("Failed");
                 }
 
-
                 // find new project's id (it is important!)
                 Project projectAdded = await _context.Project
                                         .OrderByDescending(p=> p.ProjectId) // Order by descending! Taking to last one!
                                         .FirstOrDefaultAsync(m => m.Name == project.Name &&  m.ManagerId == member.MemberId); // last one
                                    
-
                 if (projectAdded == null)
                 {
                     return NotFound();
@@ -195,7 +193,7 @@ namespace ProjectManagement.Controllers
                
                 _context.Add(new ProjectMember { 
                     MemberId = member.MemberId , 
-                    ProjectId = projectAdded.ProjectId // you can't use "project.ProjectId" because id doesnt know (before saving db) that will give error
+                    ProjectId = projectAdded.ProjectId // you can't use first "project.ProjectId" because id doesnt know (before saving db) that will give error
                 }); // add person to many to many
                
                 try
