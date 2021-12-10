@@ -28,35 +28,41 @@
 
     @* TODO: user delete *@
     <h3 class="m-2">Project members on @Model.Project.Name</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Username</th>
-                <th scope="col">Name</th>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                #
+            </div>
+            <div class="col">
+                Username
+            </div>
+            <div class="col">
+                Name
+            </div>
+        </div>
+        @{ int counter = 1;
+            foreach (ProjectMember pm in Model.ProjectMembers)
+            {
+                <div class="row">
+                    <div class="col">
+                        @counter
+                    </div>
+                    <div class="col">
+                        @pm.Member.Username
+                    </div>
+                    <div class="col">
+                        @pm.Member.Name
+                    </div>
+                    @* <td>@pm.Member.Works.Count</td>*@
 
-            </tr>
-        </thead>
-        <tbody>
-            @{ int counter = 1;
-                foreach (ProjectMember pm in Model.ProjectMembers)
-                {
-                    <tr>
-                        <th scope="row">@counter</th>
-                        <td>@pm.Member.Username</td>
-                        <td>@pm.Member.Name</td>
-                        @* <td>@pm.Member.Works.Count</td>*@
-                    </tr>
-                    counter += 1;
-                }
+                    @counter += 1;
+                </div>
             }
-        </tbody>
-    </table>
-
-    <div>
-        <a asp-action="Index" class="btn btn-secondary">Back to Index</a>
+        }
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">Back to Index</a>
+        </div>
     </div>
-</div>
 
     @section Scripts {
         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
