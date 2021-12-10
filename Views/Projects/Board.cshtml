@@ -2,8 +2,9 @@
 
 @{
     ViewData["Title"] = string.Format("{0} - Board List",@Model.Name);
+    Layout = "_LayoutProjects";
 }
-<div class="container">
+
     <div class="row">
         @foreach (var item in Model.Boards.OrderByDescending(e => e.UpdatedDate)) //
         {
@@ -23,4 +24,3 @@
         }
         </div>
    
-</div>
