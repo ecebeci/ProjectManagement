@@ -221,11 +221,23 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
             var project = await _context.Project.FindAsync(id);
             if (project == null)
             {
                 return NotFound();
             }
+
+            if(project.ManagerId != member.MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant edit.
+            {
+                return NotFound();
+            }
+
             return View(project);
         }
 

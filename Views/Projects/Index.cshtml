@@ -44,10 +44,12 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>
-
-                                <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info m-1 ">Details</a>
-                            </div>
+                                @if (pm.MemberId == pm.Project.ManagerId)
+                                { // Show Delete Button to Project's Managers
+                                    <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>
+                                }
+                                    <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info m-1 ">Details</a>
+                                </div>
                         </div>
                         <div class="row">
                             <div class="col">
