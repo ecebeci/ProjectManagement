@@ -1,4 +1,4 @@
-﻿@model ProjectManagement.Models.Project
+﻿@model ProjectManagement.Models.ViewModels.ProjectProjectMembers
 
 @{
     ViewData["Title"] = "Edit";
@@ -13,11 +13,11 @@
         <div class="col-md-4">
             <form asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="ProjectId" />
+                <input type="hidden" asp-for="Project.ProjectId" />
                 <div class="form-group">
-                    <label asp-for="Name" class="control-label">Project Name</label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <label asp-for="Project.Name" class="control-label">Project Name</label>
+                    <input asp-for="Project.Name" class="form-control" />
+                    <span asp-validation-for="Project.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />
@@ -25,6 +25,33 @@
             </form>
         </div>
     </div>
+
+    @* TODO: user delete *@
+    <h3 class="m-2">Project members on @Model.Project.Name</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Username</th>
+                <th scope="col">Name</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @{ int counter = 1;
+                foreach (ProjectMember pm in Model.ProjectMembers)
+                {
+                    <tr>
+                        <th scope="row">@counter</th>
+                        <td>@pm.Member.Username</td>
+                        <td>@pm.Member.Name</td>
+                        @* <td>@pm.Member.Works.Count</td>*@
+                    </tr>
+                    counter += 1;
+                }
+            }
+        </tbody>
+    </table>
 
     <div>
         <a asp-action="Index" class="btn btn-secondary">Back to Index</a>

@@ -40,26 +40,21 @@
                         <p class="card-text"><p class="fw-bold">Manager Name: @pm.Project.Manager.Name </p>
                         <p class="card-text"><p class="fw-bold">Last Updated Date: @pm.Project.UpdatedDate </p>
                         <div class="row">
-                            <a asp-action="Board" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary">View Boards</a>
+                            <a asp-action="Board" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary ">View Boards</a>
                         </div>
                         <div class="row">
-                            <div class="col">
-                                @if (pm.MemberId == pm.Project.ManagerId)
-                                { // Show Delete Button to Project's Managers
-                                    <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>
-                                }
-                                    <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info m-1 ">Details</a>
-                                </div>
+                            <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info my-1">Details</a>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                @if (pm.MemberId == pm.Project.ManagerId)
-                                { // Show Delete Button to Project's Managers
+                        @if (pm.MemberId == pm.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
+                        {
+                            <div class="row">
+                                <div class="col">                   
+                                    <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>                      
                                     <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
-                                }
+                                </div>
                             </div>
+                        }
                         </div>
-                    </div>
                 </div>
             </div>
         }
