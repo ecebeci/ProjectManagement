@@ -87,7 +87,7 @@ namespace ProjectManagement.Controllers
                 pagingInfo.CurrentPage = 1;
             }
 
-            var memberProjectsSearchedPaginated = memberProjects
+            var memberProjectsSearchedPaginated = memberProjectsSearched
                             .Skip((pagingInfo.CurrentPage - 1) * pagingInfo.PageSize)
                             .Take(pagingInfo.PageSize);
 
