@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
     ViewData["Title"] = "Home Page";
 }
 <!-- Header-->
@@ -10,8 +13,15 @@
                     <h1 class="display-5 fw-bolder text-white mb-2">Project Management</h1>
                     <p class="lead fw-normal text-white-50 mb-4">Manage your projects with your team quickly and easily via using our tools!</p>
                     <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
-                        <a class="btn btn-primary btn-lg px-4 me-sm-3" asp-area="Identity" asp-page="/Account/Register">Register</a>
-                        <a class="btn btn-outline-light btn-lg px-4" asp-area="Identity" asp-page="/Account/Login">Log In</a>
+                        @if (!SignInManager.IsSignedIn(User))
+                        {
+                            <a class="btn btn-primary btn-lg px-4 me-sm-3" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            <a class="btn btn-outline-light btn-lg px-4" asp-area="Identity" asp-page="/Account/Login">Log In</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary btn-lg px-4 me-sm-3" asp-controller="Projects" asp-action="Index">See your projects</a>
+                        }
                     </div>
                 </div>
             </div>
