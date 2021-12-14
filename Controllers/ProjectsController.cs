@@ -241,8 +241,7 @@ namespace ProjectManagement.Controllers
             var ProjectMembers = await _context.ProjectMember
                 .Where(x => x.Project == project)
                 .Include(u => u.Member)
-                .Include(u => u.Project.Manager)
-                .ToListAsync();
+                .Include(u => u.Project.Manager).ToListAsync();
 
             ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers // Setting View Model
             {
@@ -259,24 +258,111 @@ namespace ProjectManagement.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,ManagerId")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name")] Project project)
         {
             if (id != project.ProjectId)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    project.UpdatedDate = DateTime.Now;
-                    _context.Update(project);
+            var projectFound = _context.Project
+                              .Where(x => x.ProjectId == project.ProjectId)
+                              .FirstOrDefault();
+
+            projectFound.Name = project.Name; // Change name
+            projectFound.UpdatedDate = DateTime.Now;
+            try
+                {    
+                    _context.Project.Update(projectFound);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ProjectExists(project.ProjectId))
+                    {
+                        return NotFound(); // TODO : Redirect to failed page
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(Index));
+            
+        }
+
+
+    
+
+        [HttpPost]
+        [HttpPost, ActionName("AddMemberProject")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "member")]
+        public async Task<IActionResult> AddMemberProject([Bind("Username")] Member member, [Bind("ProjectId")] Project project)
+        {
+            if (member.Username == null)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "You have entered invalid username. Please check the name!";
+                return View("Failed");
+            }
+
+            member = await _context.Member
+                         .Where(x=> x.Username == member.Username)
+                         .FirstOrDefaultAsync();
+
+            if (member == null)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "The username which you entered is not registered! Please check the name again!";
+                return View("Failed");
+            }
+
+            var ProjectMemberCheck = await _context.ProjectMember
+                                        .Include(x => x.Member)
+                                        .Where(x => x.ProjectId == project.ProjectId)
+                                        .Where(x => x.Member.Username == member.Username)
+                                        .ToListAsync();
+
+            if (ProjectMemberCheck.Any())
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "You entered a person who already exists in the project. Please check the name!";
+                return View("Failed");
+            }
+
+
+            // Find Project
+            project = _context.Project
+                                .Where(x => x.ProjectId == project.ProjectId)
+                                .FirstOrDefault();
+
+            if (project == null)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "The project can't found! It may have been deleted.";
+                return View("Failed");
+            }
+            
+            // Update Time
+            project.UpdatedDate = DateTime.Now;
+
+            try
+            {
+                    _context.ProjectMember.Add(new ProjectMember
+                    {
+                        ProjectId = project.ProjectId,
+                        MemberId = member.MemberId
+                    });
+
+                    _context.Project.Update(project);
+
+                    await _context.SaveChangesAsync();
+                }
+            catch (DbUpdateConcurrencyException)
+                {
+                    if (!MemberExits(project.ProjectId, member.MemberId))
                     {
                         return NotFound();
                     }
@@ -284,13 +370,13 @@ namespace ProjectManagement.Controllers
                     {
                         throw;
                     }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(project);
+             }
+            
+
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Projects/Delete/5
+            // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -332,7 +418,48 @@ namespace ProjectManagement.Controllers
             return View(ProjectProjectMembers);
         }
 
-        // POST: Projects/Delete/5
+        // POST: Projects/DeleteMember/@pm
+        [HttpPost, ActionName("DeleteMember")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "member")]
+        public async Task<IActionResult> DeleteMemberOnProjectConfirmed([Bind("ProjectId, MemberId")]  ProjectMember pm)
+        {
+            // adding Project and Member objects 
+            var ProjectMember = await _context.ProjectMember 
+               .Where(x => x.ProjectId == pm.ProjectId)
+               .Where(x => x.MemberId == pm.MemberId)
+               .Include(u => u.Member)
+               .Include(u => u.Project)
+               .Include(u => u.Project.Manager)
+               .FirstOrDefaultAsync();
+
+            if (ProjectMember == null)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "Project couldn't find.";
+                return View("Failed");
+            }
+
+            if(ProjectMember.Project.ManagerId == ProjectMember.Member.MemberId)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "You can't discard yourself on Project. To delete project go to Delete Project";
+                return View("Failed");
+            }
+
+
+            // Update Time
+            ProjectMember.Project.UpdatedDate = DateTime.Now;
+
+            // TODO: add try catch
+            _context.ProjectMember.Remove(ProjectMember);
+            _context.Project.Update(ProjectMember.Project); // Update Project.UpdateDate 
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+            // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "member")]
@@ -369,5 +496,10 @@ namespace ProjectManagement.Controllers
         {
             return _context.Project.Any(e => e.ProjectId == id);
         }
-    }
+
+        private bool MemberExits(int ProjectId,int MemberId)
+            {
+                return _context.ProjectMember.Any(e => e.ProjectId == ProjectId && e.MemberId == MemberId);
+        }
+        }
 }

@@ -1,38 +1,47 @@
-﻿@model ICollection<ProjectManagement.Models.Board>
+﻿@model ProjectManagement.Models.ViewModels.BoardsProjectMember
 
 @{
-    ViewData["Title"] = string.Format("{0} - Board List",@Model.First().Project.Name);
+    ViewData["Title"] = string.Format("{0} - Board List", Model.Boards.First().Project.Name);
 }
-<div class="container">
-    <div class="row">
-        @foreach (var item in Model.OrderByDescending(e => e.UpdatedDate)) //
-        {
-            <div class="col-sm">
 
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Title</h5>
-                        <p class="card-text lead">@item.Project.Name</p>
-                        <p>@item.BoardDescription</p>
-                        <p class="lead text-info">Updated Date: @item.UpdatedDate</p>
-                        <p class="lead text-info">Created Date: @item.CreatedDate</p>
-                        <div class="row">
-                            <a asp-controller="Lists" asp-action="Index" asp-route-id="@item.BoardId" class="btn btn-primary btn-block">View Boards</a>
-                        </div>
+<div class="text-center">
+    <h1 class="display-4 ">@Model.ProjectMember.Project.Name Boards</h1>
+    @if (Model.ProjectMember.MemberId == Model.ProjectMember.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
+    {
+        <a asp-action="Create" class="btn btn-primary">Create a New Board</a>
+    }
+</div>
+
+
+<br />
+
+<div class="row">
+    @foreach (var item in Model.Boards.OrderByDescending(e => e.UpdatedDate)) //
+    {
+        <div class="col-lg-6 mb-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Title</h5>
+                    <p class="card-text">Last Updated Date: @item.UpdatedDate </p>
+                    <div class="row">
+                        <a asp-action="List" asp-route-id="@item.BoardId" class="btn btn-primary ">View Board</a>
+                    </div>
+                    <div class="row">
+                        <a asp-action="Details" asp-route-id="@item.BoardId" class="btn btn-info my-1">Details</a>
+                    </div>
+
+                    @if (Model.ProjectMember.MemberId == item.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
+                    {
                         <div class="row">
                             <div class="col">
-                                <a asp-action="Edit" asp-route-id="@item.BoardId" class="btn btn-secondary ">Edit Board</a>
-
-                                <a asp-action="Details" asp-route-id="@item.BoardId" class="btn btn-info">Details</a>
-
+                                <a asp-action="Edit" asp-route-id="@item.BoardId" class="btn btn-success m-2 ">Edit Board</a>
                                 <a asp-action="Delete" asp-route-id="@item.BoardId" class="btn btn-danger">Delete Board</a>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
-                
             </div>
-        }
         </div>
-   
+    }
+
 </div>

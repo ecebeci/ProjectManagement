@@ -27,44 +27,58 @@
         </div>
     </div>
 
-    @* TODO: user delete *@
-    <h3 class="m-2">Project members on @Model.Project.Name</h3>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                #
-            </div>
-            <div class="col">
-                Username
-            </div>
-            <div class="col">
-                Name
-            </div>
-        </div>
-        @{ int counter = 1;
-            foreach (ProjectMember pm in Model.ProjectMembers)
-            {
-                <div class="row">
-                    <div class="col">
-                        @counter
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-8"><h2>Project Users <b>Details</b></h2></div>
+                        <form asp-action="AddMemberProject">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="Project.ProjectId" />
+                            <div class="form-group">
+                                <label asp-for="ProjectMembers.FirstOrDefault().Member.Username" class="control-label">Username</label>
+                                <input asp-for="ProjectMembers.FirstOrDefault().Member.Username" class="form-control" />
+                                <span asp-validation-for="ProjectMembers.FirstOrDefault().Member.Username" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4">
+                                    <input type="submit" value="Add New Member" class="btn btn-info add-new">
+                                </div>
+                            </div> 
+                        </form>
                     </div>
-                    <div class="col">
-                        @pm.Member.Username
-                    </div>
-                    <div class="col">
-                        @pm.Member.Name
-                    </div>
-                    @* <td>@pm.Member.Works.Count</td>*@
-
-                    @counter += 1;
                 </div>
-            }
-        }
-        <div>
-            <a asp-action="Index" class="btn btn-secondary">Back to Index</a>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ProjectMember pm in Model.ProjectMembers)
+                        {
+                        <tr>
+                            <td>@pm.Member.Name</td>
+                            <td>@pm.Member.Username</td>
+                            <td>
+                                <form asp-action="DeleteMember">
+                                    <input type="hidden" asp-for="@pm.ProjectId" />
+                                    <input type="hidden" asp-for="@pm.MemberId" />
+                                    <div class="form-group">
+                                        <input type="submit" value="Delete" class="btn btn-danger" />
+                                    </div>
+                                </form>
+                            </td>               
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
+   
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
