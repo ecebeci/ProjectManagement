@@ -7,8 +7,9 @@
 
 <div class="text-center">
     <h1 class="display-4 ">@User.Identity.Name's Projects</h1>
-    <a asp-action="Create" class="btn btn-primary m-2">Create a New Project</a>
+    <a asp-action="Create" class="btn btn-primary">Create a New Project</a>
 </div>
+
 
 <br />
     <div class="form-group row">
@@ -32,11 +33,11 @@
         {
             <div class="col-lg-6 mb-4">
                 <div class="card" style="width: 18rem;">
-                    @*<img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">*@
+                    <img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">@pm.Project.Name</h5>
-                        <p class="card-text"><p class="fw-bold">Manager Name: @pm.Project.Manager.Name </p>
-                        <p class="card-text"><p class="fw-bold">Last Updated Date: @pm.Project.UpdatedDate </p>
+                        <h5 class="card-title">@pm.Project.Name</h5> 
+                        <p class="card-text">Manager Name: @pm.Project.Manager.Name </p>
+                        <p class="card-text">Last Updated Date: @pm.Project.UpdatedDate </p>
                         <div class="row">
                             <a asp-action="Board" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary ">View Boards</a>
                         </div>
@@ -55,7 +56,7 @@
                         </div>
                 </div>
             </div>
-        }
+            }
     </div>
 
 
