@@ -1,4 +1,4 @@
-﻿@model List<ProjectManagement.Models.ProjectMember>
+﻿@model ProjectsListViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -9,9 +9,29 @@
     <a asp-action="Create" class="btn btn-primary">Create a New Project</a>
 </div>
 
+
+<br />
+<div class="container">
+    <div class="form-group row">
+        <h5 class="title">Search</h5>     
+        <form asp-action="Index" method="get">
+            <label for="name" class="control-label">Project Name</label>
+            <div class="w-50">
+                <input name="name" type="search" class="form-control " value="@Model.NameSearched" />
+            </div>
+                <div class="mt-3">
+                    <input type="submit" value="Search" class="btn btn-info" />
+                    <a asp-action="Index" class="btn btn-secondary">Clear</a>
+                </div>
+        </form>
+    </div>
+</div>
+
+<br />
+
 <div class="container">
     <div class="row">
-        @foreach (ProjectMember pm in Model)
+        @foreach (ProjectMember pm in Model.ProjectMember)
         {
             <div class="col-lg-6 mb-4">
                 <div class="card" style="width: 18rem;">
@@ -21,20 +41,79 @@
                         <p class="card-text">Manager Name: @pm.Project.Manager.Name </p>
                         <p class="card-text">Last Updated Date: @pm.Project.UpdatedDate </p>
                         <div class="row">
-                            <a asp-controller="Boards" asp-action="Index" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary btn-block">View Boards</a>
+                            <a asp-action="Board" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary ">View Boards</a>
                         </div>
                         <div class="row">
-                            <div class="col">
-                                <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-secondary ">Edit Project</a>
-
-                                <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info">Details</a>
-
-                                <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
-                            </div>
+                            <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info my-1">Details</a>
                         </div>
-                    </div>
+                        @if (pm.MemberId == pm.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
+                        {
+                            <div class="row">
+                                <div class="col">                   
+                                    <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>                      
+                                    <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
+                                </div>
+                            </div>
+                        }
+                        </div>
                 </div>
             </div>
             }
     </div>
-    </div>
+</div>
+
+<div class="d-flex justify-content-center">
+    <nav class="mt-3">
+        <ul class="pagination">
+            @{
+                if (Model.PagingInfo.CurrentPage == 1)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">First</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="1">First</a>
+                    </li>
+                }
+
+                int firstPage = Model.PagingInfo.CurrentPage - PagingInfo.NUMBER_PAGES_SHOW_BEFORE_AFTER;
+                if (firstPage < 1) firstPage = 1;
+
+                int lastPage = Model.PagingInfo.CurrentPage + PagingInfo.NUMBER_PAGES_SHOW_BEFORE_AFTER;
+                if (lastPage > Model.PagingInfo.TotalPages) lastPage = Model.PagingInfo.TotalPages;
+
+                for (int p = firstPage; p <= lastPage; p++)
+                {
+                    if (p == Model.PagingInfo.CurrentPage)
+                    {
+                        <li class="page-item active">
+                            <a class="page-link" href="#">@p <span class="sr-only">(current)</span></a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index" asp-route-page="@p">@p</a>
+                        </li>
+                    }
+                }
+
+                if (Model.PagingInfo.CurrentPage == Model.PagingInfo.TotalPages)
+                {
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Last</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-page="@Model.PagingInfo.TotalPages">Last</a>
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+</div>

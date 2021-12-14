@@ -25,7 +25,7 @@ namespace ProjectManagement.Controllers
 
         }
 
-
+        // To be deleted
         // GET: Projects/Board/5
         [Authorize(Roles = "member")]
         public async Task<IActionResult> Board(int? id)
@@ -49,9 +49,8 @@ namespace ProjectManagement.Controllers
 
         // GET: Projects
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string name, int page = 1)
         {
-
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
             if (member == null)
             {
@@ -59,18 +58,44 @@ namespace ProjectManagement.Controllers
             }
 
             var memberProjects = await _context.ProjectMember
-             .Where(m => m.MemberId == member.MemberId)
-             .Include(b => b.Member) 
-             .Include(b => b.Project.Manager) // include manager (many - (to) - many)
+             .Where(p => p.MemberId == member.MemberId)
+             .Include(p => p.Member) 
+             .Include(p => p.Project.Manager) // include manager (many - (to) - many)
              .ToListAsync();
-
 
             if (memberProjects.Count == 0) 
             {
                 return View("Create");
             }
 
-            return View(memberProjects);
+            var memberProjectsSearched = memberProjects.Where(p => name == null || p.Project.Name.Contains(name)); // search
+
+            var pagingInfo = new PagingInfo
+            {
+                CurrentPage = page,
+                TotalItems = memberProjectsSearched.Count()
+            };
+
+            if (pagingInfo.CurrentPage > pagingInfo.TotalPages)
+            {
+                pagingInfo.CurrentPage = pagingInfo.TotalPages;
+            }
+
+            if (pagingInfo.CurrentPage < 1)
+            {
+                pagingInfo.CurrentPage = 1;
+            }
+
+            var memberProjectsSearchedPaginated = memberProjectsSearched
+                            .Skip((pagingInfo.CurrentPage - 1) * pagingInfo.PageSize)
+                            .Take(pagingInfo.PageSize);
+
+            return View( new ProjectsListViewModel
+            {
+                ProjectMember = memberProjectsSearchedPaginated,
+                PagingInfo = pagingInfo,
+                NameSearched = name
+            });
         }
 
         // GET: Projects/Details/5
@@ -82,8 +107,14 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
             var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
+                .FirstOrDefaultAsync(p => p.ProjectId == id);
             if (project == null)
             {
                 return NotFound();
@@ -95,7 +126,13 @@ namespace ProjectManagement.Controllers
                 .Include(u => u.Project.Manager)
                 .ToListAsync();
 
-            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers
+            var CheckIsUserinProject = ProjectMembers.Where(p => p.MemberId == member.MemberId); // Checking Non-Authorized Access with Member id matches
+            if (!CheckIsUserinProject.Any()) // Checking CheckIsUserinProject has 1 entry
+            {
+                return NotFound();
+            }
+
+            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers // Setting View Model
             {
                 Project = project,
                 ProjectMembers = ProjectMembers
@@ -121,11 +158,6 @@ namespace ProjectManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                //var user = await _userManager.GetUserAsync(User);
-                //var userId = user?.Id;
-
-                // user ekle seeddata da ayrica register oldugunda da member class a baglanmali?
-         
                 Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name) ;
                 if(member == null)
                 {
@@ -133,25 +165,47 @@ namespace ProjectManagement.Controllers
                 }
 
                 project.ManagerId = member.MemberId;
-
+                project.CreatedDate = DateTime.Now;
+                project.UpdatedDate = DateTime.Now; // creating also means the first update
                 _context.Add(project);
 
-                await _context.SaveChangesAsync(); // save, before to use new id's
+                try
+                {
+                    await _context.SaveChangesAsync(); // save, before to use new id's
+                }
+                catch (DbUpdateException ex)
+                {
+                    ViewBag.Title = "Error";
+                    ViewBag.Message = ex.HResult;
+                    return View("Failed");
+                }
 
                 // find new project's id (it is important!)
-                Project projectAdded = await _context.Project.FirstOrDefaultAsync(m => m.Name == project.Name);
+                Project projectAdded = await _context.Project
+                                        .OrderByDescending(p=> p.ProjectId) // Order by descending! Taking to last one!
+                                        .FirstOrDefaultAsync(m => m.Name == project.Name &&  m.ManagerId == member.MemberId); // last one
+                                   
                 if (projectAdded == null)
                 {
                     return NotFound();
                 }
 
+               
                 _context.Add(new ProjectMember { 
                     MemberId = member.MemberId , 
-                    ProjectId = projectAdded.ProjectId // you can't use "project.ProjectId" because id doesnt know (before saving db) that will give error
-                });; // add person to many to many
-
-
+                    ProjectId = projectAdded.ProjectId // you can't use first "project.ProjectId" because id doesnt know (before saving db) that will give error
+                }); // add person to many to many
+               
+                try
+                {
                 await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex) 
+                {
+                    ViewBag.Title = "Error";
+                    ViewBag.Message = ex.HResult;
+                    return View("Failed");
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -167,12 +221,36 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
             var project = await _context.Project.FindAsync(id);
             if (project == null)
             {
                 return NotFound();
             }
-            return View(project);
+
+            if(project.ManagerId != member.MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant edit.
+            {
+                return NotFound();
+            }
+
+            var ProjectMembers = await _context.ProjectMember
+                .Where(x => x.Project == project)
+                .Include(u => u.Member)
+                .Include(u => u.Project.Manager)
+                .ToListAsync();
+
+            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers // Setting View Model
+            {
+                Project = project,
+                ProjectMembers = ProjectMembers
+            };
+
+            return View(ProjectProjectMembers);
         }
 
         // POST: Projects/Edit/5
@@ -192,6 +270,7 @@ namespace ProjectManagement.Controllers
             {
                 try
                 {
+                    project.UpdatedDate = DateTime.Now;
                     _context.Update(project);
                     await _context.SaveChangesAsync();
                 }
@@ -233,7 +312,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (member.MemberId != project.ManagerId) // Non-Authorized Access 
+            if (member.MemberId != project.ManagerId) // Checking Non-Authorized Access 
             {
                 return NotFound();
             }
