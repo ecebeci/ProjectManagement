@@ -258,36 +258,42 @@ namespace ProjectManagement.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,ManagerId")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name")] Project project)
         {
             if (id != project.ProjectId)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    project.UpdatedDate = DateTime.Now;
-                    _context.Update(project);
+            var projectFound = _context.Project
+                              .Where(x => x.ProjectId == project.ProjectId)
+                              .FirstOrDefault();
+
+            projectFound.Name = project.Name; // Change name
+            projectFound.UpdatedDate = DateTime.Now;
+            try
+                {    
+                    _context.Project.Update(projectFound);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ProjectExists(project.ProjectId))
                     {
-                        return NotFound();
+                        return NotFound(); // TODO : Redirect to failed page
                     }
                     else
                     {
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
-            }
-            return View(project);
+            
         }
+
+
+    
 
         [HttpPost]
         [HttpPost, ActionName("AddMemberProject")]
@@ -344,7 +350,6 @@ namespace ProjectManagement.Controllers
 
             try
             {
-                   
                     _context.ProjectMember.Add(new ProjectMember
                     {
                         ProjectId = project.ProjectId,
@@ -355,7 +360,7 @@ namespace ProjectManagement.Controllers
 
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException)
                 {
                     if (!MemberExits(project.ProjectId, member.MemberId))
                     {
@@ -446,11 +451,11 @@ namespace ProjectManagement.Controllers
             // Update Time
             ProjectMember.Project.UpdatedDate = DateTime.Now;
 
+            // TODO: add try catch
             _context.ProjectMember.Remove(ProjectMember);
-
-            _context.Project.Update(ProjectMember.Project); // Update Project
-
+            _context.Project.Update(ProjectMember.Project); // Update Project.UpdateDate 
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
