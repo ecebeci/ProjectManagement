@@ -44,7 +44,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            return View(project);
+            return View(project.Boards);
         }
 
         // GET: Projects
