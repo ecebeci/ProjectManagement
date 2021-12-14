@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectManagement.Data;
 using ProjectManagement.Models;
+using ProjectManagement.Models.ViewModels;
 
 namespace ProjectManagement.Controllers
 {
@@ -29,6 +30,19 @@ namespace ProjectManagement.Controllers
                 return RedirectToAction("Index", "Projects"); // returns to projects page
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var memberProject = await _context.ProjectMember
+             .Where(p => p.ProjectId == id) // checking id
+             .Where(p => p.MemberId == member.MemberId)
+             .Include(p => p.Member)
+             .Include(p => p.Project.Manager) // include manager (many - (to) - many)
+             .FirstOrDefaultAsync();
+            
             var project = await _context.Project
               .Include(b => b.Boards) // Relation!
               .FirstOrDefaultAsync(m => m.ProjectId == id);
@@ -46,7 +60,11 @@ namespace ProjectManagement.Controllers
                 return View("Create");
             }
 
-            return View(boards); // boards
+            return View(new BoardsProjectMember
+            {
+                Boards = boards,
+                ProjectMember = memberProject
+            });  // boards
         }
 
         // GET: Boards/Details/5

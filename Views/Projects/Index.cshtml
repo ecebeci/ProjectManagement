@@ -39,7 +39,7 @@
                         <p class="card-text">Manager Name: @pm.Project.Manager.Name </p>
                         <p class="card-text">Last Updated Date: @pm.Project.UpdatedDate </p>
                         <div class="row">
-                            <a asp-action="Board" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary ">View Boards</a>
+                            <a asp-controller="Boards" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary ">View Boards</a>
                         </div>
                         <div class="row">
                             <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info my-1">Details</a>
