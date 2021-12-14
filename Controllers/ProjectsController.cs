@@ -326,15 +326,33 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
 
-        
+
+            // Find Project
+            project = _context.Project
+                                .Where(x => x.ProjectId == project.ProjectId)
+                                .FirstOrDefault();
+
+            if (project == null)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "The project can't found! It may have been deleted.";
+                return View("Failed");
+            }
+            
+            // Update Time
+            project.UpdatedDate = DateTime.Now;
+
             try
-                {
-                    //  project.UpdatedDate = DateTime.Now;
+            {
+                   
                     _context.ProjectMember.Add(new ProjectMember
                     {
                         ProjectId = project.ProjectId,
                         MemberId = member.MemberId
                     });
+
+                    _context.Project.Update(project);
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -354,7 +372,7 @@ namespace ProjectManagement.Controllers
         }
 
             // GET: Projects/Delete/5
-            public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
 
             if (id == null)
@@ -406,6 +424,7 @@ namespace ProjectManagement.Controllers
                .Where(x => x.ProjectId == pm.ProjectId)
                .Where(x => x.MemberId == pm.MemberId)
                .Include(u => u.Member)
+               .Include(u => u.Project)
                .Include(u => u.Project.Manager)
                .FirstOrDefaultAsync();
 
@@ -423,7 +442,13 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
 
+
+            // Update Time
+            ProjectMember.Project.UpdatedDate = DateTime.Now;
+
             _context.ProjectMember.Remove(ProjectMember);
+
+            _context.Project.Update(ProjectMember.Project); // Update Project
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
