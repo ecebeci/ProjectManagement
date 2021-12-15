@@ -294,7 +294,7 @@ namespace ProjectManagement.Controllers
 
 
     
-
+        // Adding Member to Project
         [HttpPost]
         [HttpPost, ActionName("AddMemberProject")]
         [ValidateAntiForgeryToken]
@@ -353,7 +353,7 @@ namespace ProjectManagement.Controllers
                     _context.ProjectMember.Add(new ProjectMember
                     {
                         ProjectId = project.ProjectId,
-                        MemberId = member.MemberId
+                        MemberId = member.MemberId,
                     });
 
                     _context.Project.Update(project);
