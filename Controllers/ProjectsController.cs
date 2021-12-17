@@ -25,28 +25,6 @@ namespace ProjectManagement.Controllers
 
         }
 
-        // To be deleted
-        // GET: Projects/Board/5
-        [Authorize(Roles = "member")]
-        public async Task<IActionResult> Board(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _context.Project
-              .Include(b => b.Boards) // Relation!
-              .FirstOrDefaultAsync(m => m.ProjectId == id);
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            return View(project.Boards);
-        }
-
         // GET: Projects
         [Authorize(Roles = "member")]
         public async Task<IActionResult> Index(string name, int page = 1)
