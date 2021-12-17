@@ -235,7 +235,9 @@ namespace ProjectManagement.Controllers
 
             if(project.ManagerId != member.MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant edit.
             {
-                return NotFound();
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "You are not a Project Manager! You can't access edit page.";
+                return View("Failed");
             }
 
             var ProjectMembers = await _context.ProjectMember
@@ -294,7 +296,7 @@ namespace ProjectManagement.Controllers
 
 
     
-
+        // Adding Member to Project
         [HttpPost]
         [HttpPost, ActionName("AddMemberProject")]
         [ValidateAntiForgeryToken]
@@ -353,7 +355,7 @@ namespace ProjectManagement.Controllers
                     _context.ProjectMember.Add(new ProjectMember
                     {
                         ProjectId = project.ProjectId,
-                        MemberId = member.MemberId
+                        MemberId = member.MemberId,
                     });
 
                     _context.Project.Update(project);
