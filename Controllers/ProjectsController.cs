@@ -132,7 +132,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers // Setting View Model
+            ProjectProjectMembers ProjectProjectMembers = new () // Setting View Model
             {
                 Project = project,
                 ProjectMembers = ProjectMembers
@@ -236,7 +236,7 @@ namespace ProjectManagement.Controllers
             if(project.ManagerId != member.MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant edit.
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "You are not a Project Manager! You can't access edit page.";
+                ViewBag.Message = "You are not Project Manager! You can't access edit page on this project.";
                 return View("Failed");
             }
 
@@ -245,7 +245,7 @@ namespace ProjectManagement.Controllers
                 .Include(u => u.Member)
                 .Include(u => u.Project.Manager).ToListAsync();
 
-            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers // Setting View Model
+            ProjectProjectMembers ProjectProjectMembers = new () // Setting View Model
             {
                 Project = project,
                 ProjectMembers = ProjectMembers
@@ -355,7 +355,7 @@ namespace ProjectManagement.Controllers
                     _context.ProjectMember.Add(new ProjectMember
                     {
                         ProjectId = project.ProjectId,
-                        MemberId = member.MemberId,
+                        MemberId = member.MemberId
                     });
 
                     _context.Project.Update(project);
@@ -411,7 +411,7 @@ namespace ProjectManagement.Controllers
                 .Include(u => u.Project.Manager)
                 .ToListAsync();
 
-            ProjectProjectMembers ProjectProjectMembers = new ProjectProjectMembers
+            ProjectProjectMembers ProjectProjectMembers = new ()
             {
                 Project = project,
                 ProjectMembers = ProjectMembers
