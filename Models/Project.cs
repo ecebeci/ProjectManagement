@@ -15,11 +15,17 @@ namespace ProjectManagement.Models
         public string Name { get; set; }
 
         public int ManagerId { get; set; }
-        public Member Manager { get; set; } // For just Project Manager
+        public Member Manager { get; set; } // for just Project Manager
 
         public DateTime CreatedDate { get; set; }
 
         public DateTime? UpdatedDate { get; set; }
+
+        public bool IsFinished { get; set; }
+
+        public bool IsCancelled { get; set; }
+
+        public bool IsDeleted { get; set; }
 
         public ICollection<Board> Boards { get; set; }// every project can have multiple Boards, new list must be created
 
