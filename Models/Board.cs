@@ -10,11 +10,11 @@ namespace ProjectManagement.Models
     {
         public int BoardId { get; set; }
 
-        public int ProjectId { get; set; } // daha sonra kullanilir
-        public Project Project { get; set; } // Every Board has a one project (one-to-many)
+        public int ProjectId { get; set; } 
+        public Project Project { get; set; } // every Board has a one project (one-to-many)
 
         [Required]
-        [StringLength(256)] // Think about that
+        [StringLength(256)] 
         public string Title { get; set; }
         public string BoardDescription { get; set; }
 

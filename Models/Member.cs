@@ -17,15 +17,10 @@ namespace ProjectManagement.Models
         [Required]
         [StringLength(512)]
         public string Name { get; set; }
-    
-        /*[Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        public string Password { get; set; } */
 
         public ICollection<ProjectMember> ProjectMembers { get; set; }
 
-        public ICollection<Project> Projects { get; set; } // For Project ManagerId
+        public ICollection<Project> Projects { get; set; } // for Project ManagerId
 
         public ICollection<Work> Works { get; set; } // Every member can have more works
     }
