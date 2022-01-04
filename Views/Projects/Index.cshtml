@@ -35,36 +35,53 @@
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">@pm.Project.Name</h5> 
+                        @if (pm.Project.IsCancelled)
+                        {
+                            <h5 class="card-title text-center text-danger">CANCELLED</h5>
+                            <h5 class="card-title text-center text-muted">@pm.Project.Name</h5>
+                        }
+                        else if (pm.Project.IsDeleted)
+                        {
+                            <h5 class="card-title text-center">DELETED</h5>
+                            <h5 class="card-title text-center text-muted">@pm.Project.Name</h5>
+                        }
+                        else
+                        {
+                            <h5 class="card-title text-center">@pm.Project.Name</h5>
+                        }
+
                         <p class="card-text">Manager Name: @pm.Project.Manager.Name </p>
                         <p class="card-text">Last Updated Date: @pm.Project.UpdatedDate </p>
-                        <div class="row">
-                            <a asp-controller="Boards" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary ">View Boards</a>
-                        </div>
+                        @if (!pm.Project.IsDeleted)  // Shows Edit and Delete Button to Project's Managers
+                        {
+                            <div class="row">
+                                <a asp-controller="Boards" asp-route-id="@pm.Project.ProjectId" class="btn btn-primary ">View Boards</a>
+                            </div>
+                        }
                         <div class="row">
                             <a asp-action="Details" asp-route-id="@pm.Project.ProjectId" class="btn btn-info my-1">Details</a>
                         </div>
-                        @if (pm.MemberId == pm.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
+                        @if (pm.MemberId == pm.Project.ManagerId)  // Shows Edit and Delete Button to Project's Managers
                         {
                             <div class="row">
-                                <div class="col">
-                                    <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>
-                                    @if (!pm.Project.IsDeleted)  // Show Edit and Delete Button to Project's Managers
-                                    {
+                                @if (!pm.Project.IsDeleted)  // Shows Edit and Delete Button to Project's Managers
+                                {
+                                    <div class="col">
+                                        <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>
                                         <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Revive" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Revive Project</a>
-                                    }
-                                </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-action="Revive" asp-route-id="@pm.Project.ProjectId" class="btn btn-secondary">Revive Project</a>
+                                }
                             </div>
                         }
-                        </div>
+                    </div>
                 </div>
             </div>
             }
-    </div>
+ </div>
 
 
 <div class="d-flex justify-content-center">

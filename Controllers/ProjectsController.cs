@@ -251,7 +251,7 @@ namespace ProjectManagement.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,IsCancelled")] Project project)
         {
             if (id != project.ProjectId)
             {
@@ -263,6 +263,7 @@ namespace ProjectManagement.Controllers
                               .FirstOrDefault();
 
             projectFound.Name = project.Name; // Change name
+            projectFound.IsCancelled = project.IsCancelled;
             projectFound.UpdatedDate = DateTime.Now;
             try
                 {    
@@ -453,7 +454,6 @@ namespace ProjectManagement.Controllers
             // Update Time
             ProjectMember.Project.UpdatedDate = DateTime.Now;
 
-            // TODO: add try catch
             try
             {
                 _context.ProjectMember.Remove(ProjectMember);

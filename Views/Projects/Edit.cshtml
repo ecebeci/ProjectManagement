@@ -20,6 +20,13 @@
                     <input asp-for="Project.Name" class="form-control" />
                     <span asp-validation-for="Project.Name" class="text-danger"></span>
                 </div>
+
+                @* TODO: Edit design *@
+                <div>
+                    @Html.EditorFor(x => x.Project.IsCancelled)
+                    <label asp-for="Project.IsCancelled">Cancelled</label>
+                </div>
+
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />
                 </div>
