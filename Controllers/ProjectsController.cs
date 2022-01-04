@@ -37,9 +37,22 @@ namespace ProjectManagement.Controllers
 
             var memberProjects = await _context.ProjectMember
              .Where(p => p.MemberId == member.MemberId)
+             .Where(p => p.Project.IsDeleted == false) // hide logically deleted project
              .Include(p => p.Member) 
              .Include(p => p.Project.Manager) // include manager (many - (to) - many)
              .ToListAsync();
+
+            // logically deleted project which he/she is the "project manager"
+            var ProjectsManagerofDeleted = await _context.ProjectMember
+                 .Where(p => p.MemberId == member.MemberId)
+                 .Include(p => p.Member)
+                 .Include(p => p.Project)
+                 .Include(p => p.Project.Manager)
+                 .Where(p => p.Project.IsDeleted == true) // select deleted projects
+                 .Where(p => p.Project.ManagerId == member.MemberId) // select manager of deleted projects
+                 .ToListAsync();
+
+            memberProjects.AddRange(ProjectsManagerofDeleted); // append list to end
 
             if (memberProjects.Count == 0) 
             {
@@ -477,6 +490,7 @@ namespace ProjectManagement.Controllers
             var project = await _context.Project.FindAsync(id);
 
             project.IsDeleted = true; // logically deleting
+            project.UpdatedDate = DateTime.Now;
 
             try
             {
@@ -549,7 +563,8 @@ namespace ProjectManagement.Controllers
 
             var project = await _context.Project.FindAsync(id);
 
-            project.IsDeleted = false; 
+            project.IsDeleted = false;
+            project.UpdatedDate = DateTime.Now;
 
             try
             {

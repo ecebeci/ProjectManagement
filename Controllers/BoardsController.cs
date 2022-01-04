@@ -53,7 +53,14 @@ namespace ProjectManagement.Controllers
                 return RedirectToAction("Index", "Projects"); // returns to projects page
             }
 
-            var boards = project.Boards;
+            if (project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is deleted! You can't access.";
+                return View("Failed"); // shared/failed
+            }
+
+                var boards = project.Boards;
 
             if (boards.Count == 0) // If the project has any boards
             {
