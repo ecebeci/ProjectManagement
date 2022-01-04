@@ -151,7 +151,7 @@ namespace ProjectManagement.Controllers
                 {
                     await _context.SaveChangesAsync(); // save, before to use new id's
                 }
-                catch (DbUpdateException ex)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     ViewBag.Title = "Error";
                     ViewBag.Message = ex.HResult;
@@ -256,20 +256,24 @@ namespace ProjectManagement.Controllers
                     _context.Project.Update(projectFound);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     if (!ProjectExists(project.ProjectId))
                     {
-                        return NotFound(); // TODO : Redirect to failed page
+                    ViewBag.Title = "Error";
+                    ViewBag.Message = "Project is not exist!";
+                    return View("Failed"); 
                     }
                     else
                     {
-                        throw;
-                    }
+                        ViewBag.Title = "Unexpected Error";
+                        ViewBag.Message = ex.HResult;
+                        return View("Failed");
+                }
                 }
 
-                return RedirectToAction(nameof(Index));
-            
+                return RedirectToAction("Edit", new { id = id }); // Return edit page
+
         }
 
     
@@ -341,7 +345,7 @@ namespace ProjectManagement.Controllers
                 }
             catch (DbUpdateConcurrencyException)
                 {
-                    if (!MemberExits(project.ProjectId, member.MemberId))
+                    if (!MemberExist(project.ProjectId, member.MemberId))
                     {
                         return NotFound();
                     }
@@ -350,9 +354,9 @@ namespace ProjectManagement.Controllers
                         throw;
                     }
              }
-            
 
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Edit", new { id = project.ProjectId });
         }
 
         // GET: Projects/Delete/5
@@ -403,7 +407,7 @@ namespace ProjectManagement.Controllers
             return View(ProjectProjectMembers);
         }
 
-        // POST: Projects/DeleteMember/@pm
+        // POST: Projects/Delete/DeleteMember
         [HttpPost, ActionName("DeleteMember")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "member")]
@@ -415,7 +419,7 @@ namespace ProjectManagement.Controllers
                .Where(x => x.MemberId == pm.MemberId)
                .Include(u => u.Member)
                .Include(u => u.Project)
-               .Include(u => u.Project.Manager)
+               .Include(u => u.Project.Manager)    
                .FirstOrDefaultAsync();
 
             if (ProjectMember == null)
@@ -437,11 +441,30 @@ namespace ProjectManagement.Controllers
             ProjectMember.Project.UpdatedDate = DateTime.Now;
 
             // TODO: add try catch
-            _context.ProjectMember.Remove(ProjectMember);
-            _context.Project.Update(ProjectMember.Project); // Update Project.UpdateDate 
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.ProjectMember.Remove(ProjectMember);
+                _context.Project.Update(ProjectMember.Project); // Update Project.UpdateDate 
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                if (!ProjectExists(ProjectMember.Project.ProjectId))
+                {
+                    ViewBag.Title = "Error";
+                    ViewBag.Message = "Project is not exist!";
+                    return View("Failed");
+                }
+                else
+                {
+                    ViewBag.Title = "Unexpected Error";
+                    ViewBag.Message = ex.HResult;
+                    return View("Failed");
+                }
+            }
 
-            return RedirectToAction(nameof(Index));
+
+                return RedirectToAction("Edit", new { id = pm.ProjectId });
         }
 
         // POST: Projects/Delete/5
@@ -460,7 +483,7 @@ namespace ProjectManagement.Controllers
                 _context.Project.Update(project);
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateConcurrencyException ex)
             {
                 ViewBag.Title = "Error";
                 ViewBag.Message = ex.HResult;
@@ -533,7 +556,7 @@ namespace ProjectManagement.Controllers
                 _context.Project.Update(project);
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateConcurrencyException ex)
             {
                 ViewBag.Title = "Error";
                 ViewBag.Message = ex.HResult;
@@ -548,7 +571,7 @@ namespace ProjectManagement.Controllers
             return _context.Project.Any(e => e.ProjectId == id);
         }
 
-        private bool MemberExits(int ProjectId,int MemberId)
+        private bool MemberExist(int ProjectId,int MemberId)
             {
                 return _context.ProjectMember.Any(e => e.ProjectId == ProjectId && e.MemberId == MemberId);
         }
