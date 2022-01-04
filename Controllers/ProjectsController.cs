@@ -272,7 +272,6 @@ namespace ProjectManagement.Controllers
             
         }
 
-
     
         // Adding Member to Project
         [HttpPost]
@@ -356,7 +355,7 @@ namespace ProjectManagement.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-            // GET: Projects/Delete/5
+        // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -365,15 +364,21 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
-            if (member == null)
+            var project = await _context.Project
+                .FirstOrDefaultAsync(m => m.ProjectId == id);
+            if (project == null)
             {
                 return NotFound();
             }
 
-            var project = await _context.Project
-                .FirstOrDefaultAsync(m => m.ProjectId == id);
-            if (project == null)
+            if (project.IsDeleted)
+            {
+                return RedirectToAction("Revive", project); // Redirects Revive View
+            }
+
+            Member member = await _context.Member
+                            .FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
             {
                 return NotFound();
             }
@@ -439,38 +444,104 @@ namespace ProjectManagement.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-            // POST: Projects/Delete/5
+        // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "member")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
-            // Delete Board Foreign Keys
-            var Boards = await _context.Board.Where(x => x.ProjectId == id).ToListAsync();
-            foreach (Board b in Boards)
-            {
-                if (b != null)
-                {
-                    _context.Board.Remove(b);
-                }
-            }
-
-            // Delete Matched Foreign Key (ProjectId) Rows on ProjectMember Before deleting a project row
-            var projectMembers = await _context.ProjectMember.Where(x => x.ProjectId == id).ToListAsync();
-            foreach(ProjectMember pm in projectMembers)
-            {
-                if(pm != null)
-                {
-                    _context.ProjectMember.Remove(pm);
-                }
-            }
-
             var project = await _context.Project.FindAsync(id);
-            _context.Project.Remove(project);
-            await _context.SaveChangesAsync();
+
+            project.IsDeleted = true; // logically deleting
+
+            try
+            {
+                _context.Project.Update(project);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = ex.HResult;
+                return View("Failed");
+            }
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Projects/Revive/5
+        public async Task<IActionResult> Revive(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Project
+                .FirstOrDefaultAsync(m => m.ProjectId == id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            if (!project.IsDeleted)
+            {
+                return RedirectToAction("Delete", id); // Redirects Delete View
+            }
+
+            Member member = await _context.Member
+                            .FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            if (member.MemberId != project.ManagerId) // Checking Non-Authorized Access 
+            {
+                return NotFound();
+            }
+
+            var ProjectMembers = await _context.ProjectMember
+                .Where(x => x.Project == project)
+                .Include(u => u.Member)
+                .Include(u => u.Project.Manager)
+                .ToListAsync();
+
+            ProjectProjectMembers ProjectProjectMembers = new()
+            {
+                Project = project,
+                ProjectMembers = ProjectMembers
+            };
+
+            return View(ProjectProjectMembers);
+        }
+
+        // POST: Projects/Revive/5
+        [HttpPost, ActionName("Revive")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "member")]
+        public async Task<IActionResult> ReviveConfirmed(int id)
+        {
+
+            var project = await _context.Project.FindAsync(id);
+
+            project.IsDeleted = false; 
+
+            try
+            {
+                _context.Project.Update(project);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = ex.HResult;
+                return View("Failed");
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
 
         private bool ProjectExists(int id)
         {

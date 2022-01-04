@@ -47,9 +47,16 @@
                         @if (pm.MemberId == pm.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
                         {
                             <div class="row">
-                                <div class="col">                   
-                                    <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>                      
-                                    <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
+                                <div class="col">
+                                    <a asp-action="Edit" asp-route-id="@pm.Project.ProjectId" class="btn btn-success m-2 ">Edit Project</a>
+                                    @if (!pm.Project.IsDeleted)  // Show Edit and Delete Button to Project's Managers
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Delete Project</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Revive" asp-route-id="@pm.Project.ProjectId" class="btn btn-danger">Revive Project</a>
+                                    }
                                 </div>
                             </div>
                         }

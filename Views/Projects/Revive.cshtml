@@ -6,13 +6,13 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4 ">Delete Project</h1>
+    <h1 class="display-4 ">Revive Project</h1>
 </div>
-<h2>Are you sure you want to delete this Project?</h2>
+<h2>Are you sure you want to revive this Project?</h2>
 <h6>
-    If you click "Delete" button, the following people won't have the right to see the project and boards in the project.
+    If you click "Revive" button, the following people will have the right to see the project and boards in the project again.
 </h6>
-<hr />
+
 <div>
     <h3 class="text-center">Users table on @Model.Project.Name</h3>
     <table class="table">
@@ -38,10 +38,10 @@
             }
         </tbody>
     </table>
-    <h5>Let you know, when you delete the project you can revive it anytime.</h5>
-    <form asp-action="Delete">
+    <h5>Let you know, when you revive the project you can delete it anytime.</h5>
+    <form asp-action="Revive">
         <input type="hidden" asp-for="Project.ProjectId" />
-        <input type="submit" value="Delete" class="btn btn-danger" />
+        <input type="submit" value="Revive" class="btn btn-danger" />
         <a class="btn btn-secondary" asp-action="Index">Back to List</a>
     </form>
 </div>
