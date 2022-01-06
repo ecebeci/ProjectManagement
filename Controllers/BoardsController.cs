@@ -69,7 +69,6 @@ namespace ProjectManagement.Controllers
             var boards = project.Boards;
             if (boards.Count == 0) // If the project has no boards
             {
-
                 return View("Create", new Board { ProjectId = project.ProjectId });
             }
 
@@ -102,7 +101,6 @@ namespace ProjectManagement.Controllers
         // GET: Boards/Create/<ProjectId> !
         public async Task<ActionResult> Create(int? projectId)
         {
-            //ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name");
 
             if(projectId == null)
             {
@@ -128,7 +126,6 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            //ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", projectId);
             return View(new Board { ProjectId = project.ProjectId });
         }
 
@@ -159,7 +156,6 @@ namespace ProjectManagement.Controllers
                 return RedirectToAction("Index", new { id = board.ProjectId }); // return index
             }
 
-            ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
             return View(board);
         }
 
@@ -171,12 +167,30 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
             var board = await _context.Board.FindAsync(id);
             if (board == null)
             {
                 return NotFound();
             }
 
+            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            if (!ManagerCheck(board.ProjectId, member.MemberId))
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "You are not Project Manager! You can't edit board.";
+                return View("Failed");
+            }
+               
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
             return View(board);
         }
@@ -200,7 +214,7 @@ namespace ProjectManagement.Controllers
                     _context.Update(board);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
                     if (!BoardExists(board.BoardId))
                     {
@@ -208,7 +222,9 @@ namespace ProjectManagement.Controllers
                     }
                     else
                     {
-                        throw;
+                        ViewBag.Title = "Unexpected Error";
+                        ViewBag.Message = ex.HResult;
+                        return View("Failed");
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -218,6 +234,7 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Boards/Delete/5
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -225,12 +242,31 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
             var board = await _context.Board
                 .Include(b => b.Project)
                 .FirstOrDefaultAsync(m => m.BoardId == id);
+
+            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
             if (board == null)
             {
                 return NotFound();
+            }
+
+            if (!ManagerCheck(board.ProjectId, member.MemberId))
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "You are not Project Manager! You can't delete board.";
+                return View("Failed");
             }
 
             return View(board);
@@ -255,6 +291,23 @@ namespace ProjectManagement.Controllers
         private bool MemberExists(int ProjectId, int MemberId)
         {
             return _context.ProjectMember.Any(e => e.ProjectId == ProjectId && e.MemberId == MemberId);
+        }
+
+        private bool ManagerCheck(Project project, int MemberId)
+        {
+            if (project.ManagerId != MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant delete.
+                return false;
+          
+            return true;
+        }
+
+        private bool ManagerCheck(int projectId, int MemberId)
+        {
+            if (projectId != MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant delete.
+                return false;
+            
+
+            return true;
         }
 
     }
