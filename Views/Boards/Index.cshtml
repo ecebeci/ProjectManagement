@@ -26,7 +26,7 @@
                     <p class="card-text">@item.BoardDescription</p>
                     <p class="card-text">Last Updated Date: @item.UpdatedDate </p>
                     <div class="row">
-                        <a asp-action="Dashboard" asp-route-id="@item.BoardId" class="btn btn-primary ">View Board</a>
+                        <a asp-controller="Dashboard" asp-route-id="@item.BoardId" class="btn btn-primary ">View Board</a>
                     </div>
                     <div class="row">
                         <a asp-action="Details" asp-route-id="@item.BoardId" class="btn btn-info my-1">Details</a>

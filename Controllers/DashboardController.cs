@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProjectManagement.Data;
 using ProjectManagement.Models;
 using System;
 using System.Collections.Generic;
@@ -9,9 +12,46 @@ namespace ProjectManagement.Controllers
 {
     public class DashboardController : Controller
     {
-        public IActionResult Index()
+        private readonly ProjectsContext _context;
+
+        public DashboardController(ProjectsContext context) //UserManager<IdentityUser> userManager
         {
+            _context = context; 
+        }
+
+        [Authorize(Roles = "member")]
+        public async Task<IActionResult> Index(int? id)
+        {
+            if (id == null) 
+            {
+                return RedirectToAction("Index", "Projects"); 
+            }
+
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var board = await _context.Board
+                 .Include(b => b.Project)
+                 .FirstOrDefaultAsync(m => m.BoardId == id);
+            if (board == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists(board.ProjectId, member.MemberId))
+            {
+                return NotFound();
+            }
+
             return View(GetList());
+        }
+
+        private bool MemberExists(int ProjectId, int MemberId)
+        {
+            return _context.ProjectMember.Any(e => e.ProjectId == ProjectId && e.MemberId == MemberId);
         }
 
         private List<List> GetList()
@@ -41,4 +81,5 @@ namespace ProjectManagement.Controllers
             };
         }
     }
+
 }

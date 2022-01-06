@@ -62,9 +62,8 @@ namespace ProjectManagement.Controllers
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "Project is deleted! You can't access.";
-                return View("Failed"); // shared/failed
+                return View("Failed"); // ./shared/failed
             }
-
 
             var boards = project.Boards;
             if (boards.Count == 0) // If the project has no boards
@@ -127,7 +126,7 @@ namespace ProjectManagement.Controllers
             }
 
             // TODO: Is not working!
-            if (!ManagerCheck((int) projectId, member.MemberId))
+            if (!(await ManagerCheck((int) projectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't create board.";
@@ -145,6 +144,7 @@ namespace ProjectManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProjectId,Title,BoardDescription")] Board board)
         {
+            
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
             if (member == null)
             {
@@ -156,7 +156,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!ManagerCheck(board.ProjectId, member.MemberId)) 
+            if (! (await ManagerCheck(board.ProjectId, member.MemberId))) 
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't create board.";
@@ -200,7 +200,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!ManagerCheck(board.ProjectId, member.MemberId))
+            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't edit board.";
@@ -278,7 +278,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!ManagerCheck(board.ProjectId, member.MemberId))
+            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't delete board.";
@@ -317,9 +317,16 @@ namespace ProjectManagement.Controllers
             return true;
         }
 
-        private static bool ManagerCheck(int projectId, int MemberId)
+        private async Task<bool> ManagerCheck(int projectId, int MemberId)
         {
-            if (projectId != MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant delete.
+            var project = await _context.Project
+           .FirstOrDefaultAsync(m => m.ProjectId == projectId);
+            if (project == null)
+            {
+                return false;
+            }
+
+            if (project.ManagerId != MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant delete.
                 return false;
             
             return true;
