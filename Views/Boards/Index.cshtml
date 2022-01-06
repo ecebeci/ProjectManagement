@@ -2,13 +2,14 @@
 
 @{
     ViewData["Title"] = string.Format("{0} - Board List", Model.Boards.First().Project.Name);
+    Layout = "_LayoutProjects";
 }
 
 <div class="text-center">
     <h1 class="display-4 ">@Model.ProjectMember.Project.Name Boards</h1>
     @if (Model.ProjectMember.MemberId == Model.ProjectMember.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
     {
-        <a asp-action="Create" class="btn btn-primary">Create a New Board</a>
+        <a asp-action="Create" asp-route-projectId="@Model.ProjectMember.ProjectId" class="btn btn-primary">Create a New Board</a> @* ProjectId sent *@
     }
 </div>
 

@@ -36,6 +36,11 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            if (!MemberExists((int)id, member.MemberId))
+            {
+                return NotFound();
+            }
+
             var memberProject = await _context.ProjectMember
              .Where(p => p.ProjectId == id) // checking id
              .Where(p => p.MemberId == member.MemberId)
@@ -60,11 +65,12 @@ namespace ProjectManagement.Controllers
                 return View("Failed"); // shared/failed
             }
 
-                var boards = project.Boards;
 
-            if (boards.Count == 0) // If the project has any boards
+            var boards = project.Boards;
+            if (boards.Count == 0) // If the project has no boards
             {
-                return View("Create");
+
+                return View("Create", new Board { ProjectId = project.ProjectId });
             }
 
             return View(new BoardsProjectMember
@@ -93,11 +99,37 @@ namespace ProjectManagement.Controllers
             return View(board);
         }
 
-        // GET: Boards/Create
-        public IActionResult Create()
+        // GET: Boards/Create/<ProjectId> !
+        public async Task<ActionResult> Create(int? projectId)
         {
-            ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name");
-            return View();
+            //ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name");
+
+            if(projectId == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Project
+               .FirstOrDefaultAsync(m => m.ProjectId == projectId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            Member member = await _context.Member
+                 .FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists((int)projectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            //ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", projectId);
+            return View(new Board { ProjectId = project.ProjectId });
         }
 
         // POST: Boards/Create
@@ -105,14 +137,28 @@ namespace ProjectManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BoardId,ProjectId,Title,BoardDescription,CreatedDate,UpdatedDate")] Board board)
+        public async Task<IActionResult> Create([Bind("ProjectId,Title,BoardDescription")] Board board)
         {
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
+                board.CreatedDate = DateTime.Now;
+                board.UpdatedDate = DateTime.Now;
                 _context.Add(board);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", new { id = board.ProjectId }); // return index
             }
+
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
             return View(board);
         }
@@ -130,6 +176,7 @@ namespace ProjectManagement.Controllers
             {
                 return NotFound();
             }
+
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
             return View(board);
         }
@@ -204,5 +251,11 @@ namespace ProjectManagement.Controllers
         {
             return _context.Board.Any(e => e.BoardId == id);
         }
+
+        private bool MemberExists(int ProjectId, int MemberId)
+        {
+            return _context.ProjectMember.Any(e => e.ProjectId == ProjectId && e.MemberId == MemberId);
+        }
+
     }
 }
