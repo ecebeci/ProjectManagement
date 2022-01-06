@@ -17,12 +17,13 @@
 <br />
 
 <div class="row">
-    @foreach (var item in Model.Boards.OrderByDescending(e => e.UpdatedDate)) //
+    @foreach (var item in Model.Boards.OrderByDescending(e => e.UpdatedDate)) // shows first last updated 
     {
         <div class="col-lg-6 mb-4">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">@item.Title</h5>
+                    <p class="card-text">@item.BoardDescription</p>
                     <p class="card-text">Last Updated Date: @item.UpdatedDate </p>
                     <div class="row">
                         <a asp-action="Dashboard" asp-route-id="@item.BoardId" class="btn btn-primary ">View Board</a>

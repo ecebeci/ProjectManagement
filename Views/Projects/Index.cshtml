@@ -29,7 +29,7 @@
 <br />
 
  <div class="row">
-        @foreach (ProjectMember pm in Model.ProjectMember)
+        @foreach (ProjectMember pm in Model.ProjectMember.OrderByDescending(e => e.Project.UpdatedDate))
         {
             <div class="col-lg-6 mb-4">
                 <div class="card" style="width: 18rem;">

@@ -126,6 +126,15 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
+            // TODO: Is not working!
+            if (!ManagerCheck((int) projectId, member.MemberId))
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "You are not Project Manager! You can't create board.";
+                return View("Failed");
+            }
+
+
             return View(new Board { ProjectId = project.ProjectId });
         }
 
@@ -145,6 +154,13 @@ namespace ProjectManagement.Controllers
             if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
+            }
+
+            if (!ManagerCheck(board.ProjectId, member.MemberId)) 
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "You are not Project Manager! You can't create board.";
+                return View("Failed");
             }
 
             if (ModelState.IsValid)
@@ -301,12 +317,11 @@ namespace ProjectManagement.Controllers
             return true;
         }
 
-        private bool ManagerCheck(int projectId, int MemberId)
+        private static bool ManagerCheck(int projectId, int MemberId)
         {
             if (projectId != MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant delete.
                 return false;
             
-
             return true;
         }
 
