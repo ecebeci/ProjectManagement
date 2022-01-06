@@ -133,6 +133,7 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
 
+            await UpdateProjectDate((int)projectId);
 
             return View(new Board { ProjectId = project.ProjectId });
         }
@@ -172,6 +173,8 @@ namespace ProjectManagement.Controllers
                 return RedirectToAction("Index", new { id = board.ProjectId }); // return index
             }
 
+            await UpdateProjectDate(board.ProjectId);
+
             return View(board);
         }
 
@@ -205,8 +208,8 @@ namespace ProjectManagement.Controllers
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't edit board.";
                 return View("Failed");
-            }
-               
+            }    
+
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
             return View(board);
         }
@@ -243,6 +246,7 @@ namespace ProjectManagement.Controllers
                         return View("Failed");
                     }
                 }
+                await UpdateProjectDate(board.ProjectId);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
@@ -296,6 +300,7 @@ namespace ProjectManagement.Controllers
             var board = await _context.Board.FindAsync(id);
             _context.Board.Remove(board);
             await _context.SaveChangesAsync();
+            await UpdateProjectDate(board.ProjectId);
             return RedirectToAction(nameof(Index));
         }
 
@@ -329,6 +334,29 @@ namespace ProjectManagement.Controllers
             if (project.ManagerId != MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant delete.
                 return false;
             
+            return true;
+        }
+
+        private async Task<bool> UpdateProjectDate(int projectId)
+        {
+            var project = await _context.Project
+            .FirstOrDefaultAsync(m => m.ProjectId == projectId);
+            if (project == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                project.UpdatedDate = DateTime.Now;
+                _context.Update(project);
+                await _context.SaveChangesAsync(); // save, before to use new id's
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+
             return true;
         }
 
