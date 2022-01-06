@@ -23,13 +23,8 @@ namespace ProjectManagement.Controllers
 
         // GET: Boards/5
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Index(int? id, string name, int page = 1)
+        public async Task<IActionResult> Index(int id = -1, string name, int page = 1)
         {
-            if (id == null) // if there is no id on route-id
-            {
-                return RedirectToAction("Index", "Projects"); // returns to projects page
-            }
-
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
             if (member == null)
             {
@@ -38,7 +33,7 @@ namespace ProjectManagement.Controllers
 
             if (!MemberExists((int)id, member.MemberId))
             {
-                return NotFound();
+                return RedirectToAction("Index", "Projects"); // returns to projects page
             }
 
             var memberProject = await _context.ProjectMember
