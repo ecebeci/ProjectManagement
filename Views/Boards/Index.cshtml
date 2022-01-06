@@ -2,13 +2,14 @@
 
 @{
     ViewData["Title"] = string.Format("{0} - Board List", Model.Boards.First().Project.Name);
+    Layout = "_LayoutProjects";
 }
 
 <div class="text-center">
     <h1 class="display-4 ">@Model.ProjectMember.Project.Name Boards</h1>
     @if (Model.ProjectMember.MemberId == Model.ProjectMember.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
     {
-        <a asp-action="Create" class="btn btn-primary">Create a New Board</a>
+        <a asp-action="Create" asp-route-projectId="@Model.ProjectMember.ProjectId" class="btn btn-primary">Create a New Board</a> @* ProjectId sent *@
     }
 </div>
 
@@ -16,12 +17,13 @@
 <br />
 
 <div class="row">
-    @foreach (var item in Model.Boards.OrderByDescending(e => e.UpdatedDate)) //
+    @foreach (var item in Model.Boards.OrderByDescending(e => e.UpdatedDate)) // shows first last updated 
     {
         <div class="col-lg-6 mb-4">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">@item.Title</h5>
+                    <p class="card-text">@item.BoardDescription</p>
                     <p class="card-text">Last Updated Date: @item.UpdatedDate </p>
                     <div class="row">
                         <a asp-action="Dashboard" asp-route-id="@item.BoardId" class="btn btn-primary ">View Board</a>
