@@ -23,7 +23,7 @@ namespace ProjectManagement.Controllers
 
         // GET: Boards/5
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int? id, string name, int page = 1)
         {
             if (id == null) // if there is no id on route-id
             {
@@ -71,10 +71,35 @@ namespace ProjectManagement.Controllers
                 return View("Create", new Board { ProjectId = project.ProjectId });
             }
 
-            return View(new BoardsProjectMember
+            var boardsSearched = boards.Where(p => name == null || p.Title.Contains(name));
+
+            var pagingInfo = new PagingInfo
             {
-                Boards = boards,
-                ProjectMember = memberProject
+                CurrentPage = page,
+                TotalItems = boardsSearched.Count()
+            };
+
+            if (pagingInfo.CurrentPage > pagingInfo.TotalPages)
+            {
+                pagingInfo.CurrentPage = pagingInfo.TotalPages;
+            }
+
+            if (pagingInfo.CurrentPage < 1)
+            {
+                pagingInfo.CurrentPage = 1;
+            }
+
+            var boardsSearchedPaginated = boardsSearched
+                            .Skip((pagingInfo.CurrentPage - 1) * pagingInfo.PageSize)
+                            .Take(pagingInfo.PageSize);
+
+
+            return View(new BoardsViewModel
+            {
+                Boards = boardsSearchedPaginated,
+                ProjectMember = memberProject,
+                PagingInfo = pagingInfo,
+                NameSearched = name  
             });  // boards
         }
 

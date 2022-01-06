@@ -9,16 +9,17 @@
     <h1 class="display-4 ">Details Board</h1>
 </div>
 <hr />
-
-<ul class="list-group">
-    <li class="list-group-item"><p class="fw-bold">Board Title:</p> @Model.Title</li>
-    <li class="list-group-item"><p class="fw-bold">Board Description:</p> @Model.BoardDescription </li>
-    <li class="list-group-item"><p class="fw-bold">Project Name:</p> @Model.Project.Name</li>
-    <li class="list-group-item"><p class="fw-bold">Created Date:</p> @Model.Project.CreatedDate </li>
-    <li class="list-group-item"><p class="fw-bold">Last Updated Date:</p> @Model.Project.UpdatedDate</li>
-</ul>
+<div class="row">
+    <ul class="list-group">
+        <li class="list-group-item"><p class="fw-bold">Board Title:</p> @Model.Title</li>
+        <li class="list-group-item"><p class="fw-bold">Board Description:</p> @Model.BoardDescription </li>
+        <li class="list-group-item"><p class="fw-bold">Project Name:</p> @Model.Project.Name</li>
+        <li class="list-group-item"><p class="fw-bold">Created Date:</p> @Model.Project.CreatedDate </li>
+        <li class="list-group-item"><p class="fw-bold">Last Updated Date:</p> @Model.Project.UpdatedDate</li>
+    </ul>
+</div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.BoardId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.BoardId" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

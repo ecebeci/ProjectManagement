@@ -81,7 +81,7 @@ namespace ProjectManagement.Controllers
                             .Skip((pagingInfo.CurrentPage - 1) * pagingInfo.PageSize)
                             .Take(pagingInfo.PageSize);
 
-            return View( new ProjectsListViewModel
+            return View( new ProjectsViewModel
             {
                 ProjectMember = memberProjectsSearchedPaginated,
                 PagingInfo = pagingInfo,

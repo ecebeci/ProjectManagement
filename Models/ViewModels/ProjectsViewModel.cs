@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManagement.Models.ViewModels
 {
-	public class ProjectsListViewModel
+	public class ProjectsViewModel
 	{
 		public IEnumerable<ProjectMember> ProjectMember { get; set; }
 		public PagingInfo PagingInfo { get; set; }

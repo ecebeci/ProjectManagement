@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 
 namespace ProjectManagement.Models.ViewModels
 {
-    public class BoardsProjectMember
+    public class BoardsViewModel
     {
-        public ICollection<Board> Boards { get; set; }
+        public IEnumerable<Board> Boards { get; set; }
         public ProjectMember ProjectMember { get; set; }
+        public PagingInfo PagingInfo { get; set; }
+        public string NameSearched { get; set; }
     }
 }
