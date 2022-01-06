@@ -359,7 +359,7 @@ namespace ProjectManagement.Controllers
                 }
             catch (DbUpdateConcurrencyException)
                 {
-                    if (!MemberExist(project.ProjectId, member.MemberId))
+                    if (!MemberExists(project.ProjectId, member.MemberId))
                     {
                         return NotFound();
                     }
@@ -585,7 +585,7 @@ namespace ProjectManagement.Controllers
             return _context.Project.Any(e => e.ProjectId == id);
         }
 
-        private bool MemberExist(int ProjectId,int MemberId)
+        private bool MemberExists(int ProjectId,int MemberId)
             {
                 return _context.ProjectMember.Any(e => e.ProjectId == ProjectId && e.MemberId == MemberId);
         }
