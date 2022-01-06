@@ -476,7 +476,6 @@ namespace ProjectManagement.Controllers
                 }
             }
 
-
                 return RedirectToAction("Edit", new { id = pm.ProjectId });
         }
 

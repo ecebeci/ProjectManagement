@@ -35,14 +35,15 @@
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src="https://via.placeholder.com/286x180" alt="Card image cap">
                     <div class="card-body">
-                        @if (pm.Project.IsCancelled)
-                        {
-                            <h5 class="card-title text-center text-danger">CANCELLED</h5>
-                            <h5 class="card-title text-center text-muted">@pm.Project.Name</h5>
-                        }
-                        else if (pm.Project.IsDeleted)
+                        @if (pm.Project.IsDeleted)
                         {
                             <h5 class="card-title text-center">DELETED</h5>
+                            <h5 class="card-title text-center text-muted">@pm.Project.Name</h5>
+                        }
+                        else if (pm.Project.IsCancelled)
+                        {
+
+                            <h5 class="card-title text-center text-danger">CANCELLED</h5>
                             <h5 class="card-title text-center text-muted">@pm.Project.Name</h5>
                         }
                         else
