@@ -23,7 +23,7 @@ namespace ProjectManagement.Controllers
 
         // GET: Boards/5
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Index(int id = -1, string name, int page = 1)
+        public async Task<IActionResult> Index(string name,int id = -1, int page = 1)
         {
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
             if (member == null)
