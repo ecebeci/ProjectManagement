@@ -5,20 +5,18 @@
     Layout = "_LayoutProjects";
 }
 
-<h1>Edit</h1>
+<div class="text-center">
+    <h1 class="display-4 ">Edit @Model.Title</h1>
+</div>
 
-<h4>Board</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="BoardId" />
-            <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
-                <span asp-validation-for="ProjectId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="ProjectId" />
+            <input type="hidden" asp-for="CreatedDate" />
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
@@ -30,23 +28,14 @@
                 <span asp-validation-for="BoardDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedDate" class="control-label"></label>
-                <input asp-for="UpdatedDate" class="form-control" />
-                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
+<hr />
 <div>
-    <a asp-action="Index" asp-route-id="@Model.Project.ProjectId">Back to List</a>
+    <a class="btn btn-secondary" asp-action="Index" asp-route-id = "@Model.Project.ProjectId">Back to Board List</a>
 </div>
 

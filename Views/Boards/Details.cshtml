@@ -6,7 +6,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4 ">Details Board</h1>
+    <h1 class="display-4 ">Details @Model.Title</h1>
 </div>
 <hr />
 <div class="row">
@@ -14,12 +14,12 @@
         <li class="list-group-item"><p class="fw-bold">Board Title:</p> @Model.Title</li>
         <li class="list-group-item"><p class="fw-bold">Board Description:</p> @Model.BoardDescription </li>
         <li class="list-group-item"><p class="fw-bold">Project Name:</p> @Model.Project.Name</li>
-        <li class="list-group-item"><p class="fw-bold">Created Date:</p> @Model.Project.CreatedDate </li>
-        <li class="list-group-item"><p class="fw-bold">Last Updated Date:</p> @Model.Project.UpdatedDate</li>
+        <li class="list-group-item"><p class="fw-bold">Created Date:</p> @Model.CreatedDate </li>
+        <li class="list-group-item"><p class="fw-bold">Last Updated Date:</p> @Model.UpdatedDate</li>
     </ul>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.BoardId" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.BoardId" class="btn btn-primary">Edit Board</a>
+    <a asp-action="Index"  asp-route-id = "@Model.Project.ProjectId" class="btn btn-secondary">Back to Boards</a>
 </div>

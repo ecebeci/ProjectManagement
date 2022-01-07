@@ -239,17 +239,31 @@ namespace ProjectManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BoardId,ProjectId,Title,BoardDescription,CreatedDate,UpdatedDate")] Board board)
+        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,BoardId,Title,BoardDescription,CreatedDate")] Board board)
         {
             if (id != board.BoardId)
             {
                 return NotFound();
             }
 
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "You are not Project Manager! You can't edit board.";
+                return View("Failed");
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    board.UpdatedDate = DateTime.Now;
                     _context.Update(board);
                     await _context.SaveChangesAsync();
                 }
@@ -267,7 +281,7 @@ namespace ProjectManagement.Controllers
                     }
                 }
                 await UpdateProjectDate(board.ProjectId);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", new { id = board.ProjectId }); // return index
             }
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
             return View(board);

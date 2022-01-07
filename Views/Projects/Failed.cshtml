@@ -1,5 +1,5 @@
 ﻿@{
-    if(ViewData["Title"] == null) { ViewData["Title"] = "Failed"; }
+    if (ViewData["Title"] == null) { ViewData["Title"] = "Failed"; }
 
     Layout = "_LayoutProjects";
 }
@@ -12,3 +12,7 @@
     </div>
 </div>
 
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
