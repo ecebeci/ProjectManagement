@@ -576,7 +576,8 @@ namespace ProjectManagement.Controllers
                 ViewBag.Message = ex.HResult;
                 return View("Failed");
             }
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Index","Boards", new { id = project.ProjectId }); // return index
         }
 
 

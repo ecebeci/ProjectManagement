@@ -212,7 +212,8 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            var board = await _context.Board.FindAsync(id);
+            var board = await _context.Board.Include(b => b.Project)
+                            .FirstOrDefaultAsync(b => b.BoardId == id);
             if (board == null)
             {
                 return NotFound();
