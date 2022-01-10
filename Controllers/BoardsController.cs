@@ -153,9 +153,14 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
 
-            await UpdateProjectDate((int)projectId);
-
-            return View(new Board { ProjectId = project.ProjectId });
+            var board = await _context.Board.Include(b => b.Project)
+                          .FirstOrDefaultAsync(b => b.ProjectId == projectId);
+            if (board == null)
+            {
+                return NotFound();
+            }
+  
+            return View(board);
         }
 
         // POST: Boards/Create
