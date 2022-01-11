@@ -80,14 +80,6 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            // TODO: Is not working!
-            if (!(await ManagerCheck((int)board.Project.ProjectId, member.MemberId)))
-            {
-                ViewBag.Title = "Access Denied";
-                ViewBag.Message = "You are not project manager on this project! You can't create board.";
-                return View("Failed");
-            }
-
             // TODO : Is Cancelled or Deleted!!!!!!!!!!!!
             if (board.Project.IsCancelled)
             {

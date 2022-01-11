@@ -165,7 +165,7 @@ namespace ProjectManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectId,Title,BoardDescription")] Board board)
+        public async Task<IActionResult> Create([Bind("ProjectId,Title,BoardDescription")] Board board, string submit)
         {
             
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
@@ -188,14 +188,26 @@ namespace ProjectManagement.Controllers
 
             if (ModelState.IsValid)
             {
-                board.CreatedDate = DateTime.Now;
-                board.UpdatedDate = DateTime.Now;
+                var datetime = DateTime.Now;
+                board.CreatedDate = datetime;
+                board.UpdatedDate = datetime;
                 _context.Add(board);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", new { id = board.ProjectId }); // return index
+                await UpdateProjectDate(board.ProjectId);
+                switch (submit)
+                {
+                    case "Create a Board":
+                        return RedirectToAction("Index", new { id = board.ProjectId }); // return index
+                    case "Create with a Template":
+                        var addedBoard = await _context.Board.FirstOrDefaultAsync(b => b.Title == board.Title && b.BoardDescription == board.BoardDescription && b.CreatedDate == datetime);
+                        if(addedBoard == null)
+                        {
+                            return NotFound();
+                        }
+                        return RedirectToAction("TemplateSelector", new { id = addedBoard.BoardId }); // return index
+                }
+               
             }
-
-            await UpdateProjectDate(board.ProjectId);
 
             return View(board);
         }

@@ -13,7 +13,7 @@
     <div class="row">
         @foreach (var list in Model)
         {
-            <div class="col-3">
+            <div class="col-3 mb-5">
                 <h5 class="card-title">@list.Title</h5>
                 <ul class="list-group">
                     @if (list.Works != null && list.Works.Count > 0 )
@@ -37,7 +37,16 @@
                 </ul>
             </div>
         }
-       
+
+    <div class="col-3 mt-4">
+        <ul class="list-group">
+            <li class="list-group-item text-muted">
+                <div id="addListButton">
+                    <a class="btn btn-primary" asp-action="CreateList" asp-route-id="@Model.FirstOrDefault().BoardId">Create a List</a>
+                </div>
+            </li>
+        </ul>
+    </div>
         @*<div class="col-3">
             <ul class="list-group">
                 <li class="list-group-item text-muted">
