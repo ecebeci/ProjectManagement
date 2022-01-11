@@ -100,6 +100,7 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Boards/Details/5
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -119,6 +120,7 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Boards/Create/<ProjectId> !
+        [Authorize(Roles = "member")]
         public async Task<ActionResult> Create(int? projectId)
         {
 
@@ -155,7 +157,7 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
   
-            return View(new Board { ProjectId = projectId});
+            return View(new Board { ProjectId = (int)projectId});
         }
 
         // POST: Boards/Create
@@ -199,6 +201,7 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Boards/Edit/5
+        [Authorize(Roles = "member")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)

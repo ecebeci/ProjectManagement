@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "_LayoutProjects";
 }
 
 <div class="text-center">
@@ -27,10 +26,10 @@
     </div>
 <br />
 
- <div class="row">
+ <div class="d-flex justify-content-center row">
         @foreach (ProjectMember pm in Model.ProjectMember.OrderByDescending(e => e.Project.UpdatedDate))
         {
-            <div class="col-lg-6 mb-4">
+            <div class="col-lg-4 mb-4">
                 <div class="card" style="width: 18rem;">
                     <div class="card-body">
                         @if (pm.Project.IsDeleted)

@@ -1,0 +1,45 @@
+﻿@model ProjectManagement.Models.ViewModels.RegisterMemberViewModel 
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Register</h1>
+
+<h4>Member</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Member.Username" class="control-label">E-Mail (It will be your username)</label>
+                <input asp-for="Member.Username" class="form-control" />
+                <span asp-validation-for="Member.Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Member.Name" class="control-label"></label>
+                <input asp-for="Member.Name" class="form-control" />
+                <span asp-validation-for="Member.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Register" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
