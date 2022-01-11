@@ -56,7 +56,7 @@ namespace ProjectManagement.Controllers
 
             if (memberProjects.Count == 0) 
             {
-                return View("Create");
+                return RedirectToAction("Create");
             }
 
             var memberProjectsSearched = memberProjects.Where(p => name == null || p.Project.Name.Contains(name)); // search
