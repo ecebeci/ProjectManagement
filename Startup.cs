@@ -34,7 +34,8 @@ namespace ProjectManagement
 
 
             services.AddIdentity<IdentityUser, IdentityRole>(
-            options => {
+            options =>
+            {
                 // Sign in
                 options.SignIn.RequireConfirmedAccount = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
@@ -54,14 +55,14 @@ namespace ProjectManagement
                 // Lockout
                 options.Lockout.AllowedForNewUsers = true;
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultUI();
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddControllersWithViews();
 
             services.AddDbContext<ProjectsContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("ProjectsContext")));
 
+            services.AddRazorPages(); // for the Identity pages
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
