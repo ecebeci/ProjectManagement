@@ -3,6 +3,7 @@
 @inject UserManager<IdentityUser> UserManager
 @{
     ViewData["Title"] = "Home Page";
+    
 }
 <!-- Header-->
 <header class="bg-dark py-5">
@@ -18,6 +19,10 @@
                             <a class="btn btn-primary btn-lg px-4 me-sm-3" asp-area="Identity" asp-page="/Account/Register">Register</a>
                             <a class="btn btn-outline-light btn-lg px-4" asp-area="Identity" asp-page="/Account/Login">Log In</a>
                         }
+                        //else if (UserManager.IsInRoleAsync(User.Identity.Name, "admin")) TODO: Calistir
+                        //{
+
+                        //}
                         else
                         {
                             <a class="btn btn-primary btn-lg px-4 me-sm-3" asp-controller="Projects" asp-action="Index">See your projects</a>
