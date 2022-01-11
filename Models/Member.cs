@@ -11,7 +11,7 @@ namespace ProjectManagement.Models
         public int MemberId { get; set; }
 
         [Required]
-        [StringLength(15)]
+        [StringLength(256)]
         public string Username { get; set; }
 
         [Required]
