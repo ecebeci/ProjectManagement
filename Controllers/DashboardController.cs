@@ -42,7 +42,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!MemberExists(board.ProjectId, member.MemberId))
+            if (!MemberExists((int)board.ProjectId, member.MemberId))
             {
                 return NotFound();
             }
@@ -128,12 +128,12 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
             }
 
-            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't create board.";
@@ -151,7 +151,7 @@ namespace ProjectManagement.Controllers
                 board.UpdatedDate = DateTime.Now;
                 _context.Update(board);
                 await _context.SaveChangesAsync();
-                await UpdateProjectDate(board.ProjectId);
+                await UpdateProjectDate((int)board.ProjectId);
                 return RedirectToAction("Index", new { id = board.BoardId }); // return index
             }
 

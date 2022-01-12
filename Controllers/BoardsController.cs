@@ -174,12 +174,12 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
             }
 
-            if (! (await ManagerCheck(board.ProjectId, member.MemberId))) 
+            if (! (await ManagerCheck((int)board.ProjectId, member.MemberId))) 
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't create board.";
@@ -193,7 +193,7 @@ namespace ProjectManagement.Controllers
                 board.UpdatedDate = datetime;
                 _context.Add(board);
                 await _context.SaveChangesAsync();
-                await UpdateProjectDate(board.ProjectId);
+                await UpdateProjectDate((int)board.ProjectId);
                 switch (submit)
                 {
                     case "Create a Board":
@@ -204,7 +204,7 @@ namespace ProjectManagement.Controllers
                         {
                             return NotFound();
                         }
-                        return RedirectToAction("TemplateSelector", new { id = addedBoard.BoardId }); // return index
+                        return RedirectToAction("TemplateSelector", new { id = addedBoard.BoardId }); // return template selector
                 }
                
             }
@@ -234,12 +234,12 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
             }
 
-            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not project manager on this project! You can't edit board.";
@@ -268,7 +268,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not project manager on this project! You can't edit board.";
@@ -296,7 +296,7 @@ namespace ProjectManagement.Controllers
                         return View("Failed");
                     }
                 }
-                await UpdateProjectDate(board.ProjectId);
+                await UpdateProjectDate((int)board.ProjectId);
                 return RedirectToAction("Index", new { id = board.ProjectId }); // return index
             }
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
@@ -322,7 +322,7 @@ namespace ProjectManagement.Controllers
                 .Include(b => b.Project)
                 .FirstOrDefaultAsync(m => m.BoardId == id);
 
-            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
             }
@@ -332,7 +332,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not project manager on this project! You can't delete board.";
@@ -351,7 +351,7 @@ namespace ProjectManagement.Controllers
             var board = await _context.Board.FindAsync(id);
             _context.Board.Remove(board);
             await _context.SaveChangesAsync();
-            await UpdateProjectDate(board.ProjectId);
+            await UpdateProjectDate((int)board.ProjectId);
             return RedirectToAction(nameof(Index));
         }
 
