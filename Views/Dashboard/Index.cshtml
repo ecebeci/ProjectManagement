@@ -1,19 +1,22 @@
-﻿@model List<List>
+﻿@model IEnumerable<ProjectManagement.Models.List>;
+
 @{
+    ViewData["Title"] = "List";
 }
 <style>
     .test1 {
         overflow-x: auto;
     }
 </style>
+
 <div class="container test1" >
     <div class="row">
         @foreach (var list in Model)
         {
-            <div class="col-3">
+            <div class="col-3 mb-5">
                 <h5 class="card-title">@list.Title</h5>
                 <ul class="list-group">
-                    @if (list.Works.Count > 0)
+                    @if (list.Works != null && list.Works.Count > 0 )
                     {
                         @foreach (var item in list.Works.OrderBy(x => x.Priority))
                         {
@@ -34,7 +37,17 @@
                 </ul>
             </div>
         }
-        <div class="col-3">
+
+    <div class="col-3 mt-4">
+        <ul class="list-group">
+            <li class="list-group-item text-muted">
+                <div id="addListButton">
+                    <a class="btn btn-primary" asp-action="CreateList" asp-route-id="@Model.FirstOrDefault().BoardId">Create a List</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+        @*<div class="col-3">
             <ul class="list-group">
                 <li class="list-group-item text-muted">
                     <div id="addListButton"> <button class="btn btn-primary" onclick="getElementById('addNewList').style.display = 'block'; document.getElementById('addListButton').style.display = 'none';">+ Add a new list!</button> </div>
@@ -45,7 +58,7 @@
                     </div>
                 </li>
             </ul>
-        </div>
+        </div>*@
     </div>
 </div>
 

@@ -165,7 +165,7 @@ namespace ProjectManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectId,Title,BoardDescription")] Board board)
+        public async Task<IActionResult> Create([Bind("ProjectId,Title,BoardDescription")] Board board, string submit)
         {
             
             Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
@@ -174,12 +174,12 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
             }
 
-            if (! (await ManagerCheck(board.ProjectId, member.MemberId))) 
+            if (! (await ManagerCheck((int)board.ProjectId, member.MemberId))) 
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not Project Manager! You can't create board.";
@@ -188,14 +188,26 @@ namespace ProjectManagement.Controllers
 
             if (ModelState.IsValid)
             {
-                board.CreatedDate = DateTime.Now;
-                board.UpdatedDate = DateTime.Now;
+                var datetime = DateTime.Now;
+                board.CreatedDate = datetime;
+                board.UpdatedDate = datetime;
                 _context.Add(board);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", new { id = board.ProjectId }); // return index
+                await UpdateProjectDate((int)board.ProjectId);
+                switch (submit)
+                {
+                    case "Create a Board":
+                        return RedirectToAction("Index", new { id = board.ProjectId }); // return index
+                    case "Create with a Template":
+                        var addedBoard = await _context.Board.FirstOrDefaultAsync(b => b.Title == board.Title && b.BoardDescription == board.BoardDescription && b.CreatedDate == datetime);
+                        if(addedBoard == null)
+                        {
+                            return NotFound();
+                        }
+                        return RedirectToAction("TemplateSelector", new { id = addedBoard.BoardId }); // return template selector
+                }
+               
             }
-
-            await UpdateProjectDate(board.ProjectId);
 
             return View(board);
         }
@@ -222,12 +234,12 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
             }
 
-            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not project manager on this project! You can't edit board.";
@@ -256,7 +268,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not project manager on this project! You can't edit board.";
@@ -284,7 +296,7 @@ namespace ProjectManagement.Controllers
                         return View("Failed");
                     }
                 }
-                await UpdateProjectDate(board.ProjectId);
+                await UpdateProjectDate((int)board.ProjectId);
                 return RedirectToAction("Index", new { id = board.ProjectId }); // return index
             }
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
@@ -310,7 +322,7 @@ namespace ProjectManagement.Controllers
                 .Include(b => b.Project)
                 .FirstOrDefaultAsync(m => m.BoardId == id);
 
-            if (!MemberExists(board.ProjectId, member.MemberId)) // check non-authorized access
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
             {
                 return NotFound();
             }
@@ -320,7 +332,7 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!(await ManagerCheck(board.ProjectId, member.MemberId)))
+            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not project manager on this project! You can't delete board.";
@@ -339,7 +351,7 @@ namespace ProjectManagement.Controllers
             var board = await _context.Board.FindAsync(id);
             _context.Board.Remove(board);
             await _context.SaveChangesAsync();
-            await UpdateProjectDate(board.ProjectId);
+            await UpdateProjectDate((int)board.ProjectId);
             return RedirectToAction(nameof(Index));
         }
 

@@ -10,8 +10,11 @@ namespace ProjectManagement.Models
     {
         public int BoardId { get; set; }
 
-        public int ProjectId { get; set; } 
+        public int? ProjectId { get; set; } 
         public Project Project { get; set; } // every Board has a one project (one-to-many)
+
+        public int? TemplateId { get; set; }
+        public Template Template { get; set; } // every Template has boards (one-to-many)
 
         [Required]
         [StringLength(256)] 
