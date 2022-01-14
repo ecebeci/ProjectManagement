@@ -229,7 +229,7 @@ namespace ProjectManagement.Controllers
             if(project.ManagerId != member.MemberId) // Check non-authorized access. If the user is not project member what thet selected, they cant edit.
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "You are not Project Manager! You can't access edit page on this project.";
+                ViewBag.Message = "You are not Project Manager on this project! You can't access edit page on this project.";
                 return View("Failed");
             }
 

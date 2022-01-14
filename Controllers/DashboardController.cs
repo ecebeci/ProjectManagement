@@ -136,7 +136,7 @@ namespace ProjectManagement.Controllers
             if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "You are not Project Manager! You can't create board.";
+                ViewBag.Message = "You are not project manager on this project! You can't create board. Contact your project manager.";
                 return View("Failed");
             }
 
