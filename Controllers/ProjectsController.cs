@@ -40,6 +40,7 @@ namespace ProjectManagement.Controllers
              .Where(p => p.Project.IsDeleted == false) // hide logically deleted project
              .Include(p => p.Member) 
              .Include(p => p.Project.Manager) // include manager (many - (to) - many)
+             .OrderByDescending(e => e.Project.UpdatedDate)
              .ToListAsync();
 
             // logically deleted project which he/she is the "project manager"
@@ -50,8 +51,9 @@ namespace ProjectManagement.Controllers
                  .Include(p => p.Project.Manager)
                  .Where(p => p.Project.IsDeleted == true) // select deleted projects
                  .Where(p => p.Project.ManagerId == member.MemberId) // select manager of deleted projects
+                 .OrderByDescending(e => e.Project.UpdatedDate)
                  .ToListAsync();
-
+                 
             memberProjects.AddRange(ProjectsManagerofDeleted); // append list to end
 
             if (memberProjects.Count == 0) 
