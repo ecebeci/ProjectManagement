@@ -10,6 +10,6 @@ namespace ProjectManagement.Models
         public int TemplateId { get; set; }
         public int Name { get; set; }
 
-        public ICollection<Board> Boards { get; set; }
+        public ICollection<List> Lists { get; set; }
     }
 }

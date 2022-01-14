@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectManagement.Data;
 
-namespace ProjectManagement.Data.Migrations
+namespace ProjectManagement.Migrations.Projects
 {
     [DbContext(typeof(ProjectsContext))]
-    partial class ProjectsContextModelSnapshot : ModelSnapshot
+    [Migration("20220114113010_UpdateListandBoardModel")]
+    partial class UpdateListandBoardModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,6 +37,9 @@ namespace ProjectManagement.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TemplateId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -46,6 +51,8 @@ namespace ProjectManagement.Data.Migrations
                     b.HasKey("BoardId");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("TemplateId");
 
                     b.ToTable("Board");
                 });
@@ -222,6 +229,10 @@ namespace ProjectManagement.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("ProjectManagement.Models.Template", null)
+                        .WithMany("Boards")
+                        .HasForeignKey("TemplateId");
+
                     b.Navigation("Project");
                 });
 
@@ -232,7 +243,7 @@ namespace ProjectManagement.Data.Migrations
                         .HasForeignKey("BoardId");
 
                     b.HasOne("ProjectManagement.Models.Template", "Template")
-                        .WithMany("Lists")
+                        .WithMany()
                         .HasForeignKey("TemplateId");
 
                     b.Navigation("Boards");
@@ -317,7 +328,7 @@ namespace ProjectManagement.Data.Migrations
 
             modelBuilder.Entity("ProjectManagement.Models.Template", b =>
                 {
-                    b.Navigation("Lists");
+                    b.Navigation("Boards");
                 });
 #pragma warning restore 612, 618
         }
