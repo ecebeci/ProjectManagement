@@ -55,5 +55,6 @@ namespace ProjectManagement.Data
 
         public DbSet<Member> Member { get; set; }
         public DbSet<ProjectMember> ProjectMember { get; set; }
+        public DbSet<ProjectManagement.Models.Template> Template { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace ProjectManagement.Models
     public class Template
     {
         public int TemplateId { get; set; }
-        public int Name { get; set; }
+        public string Name { get; set; }
 
         public ICollection<List> Lists { get; set; }
     }

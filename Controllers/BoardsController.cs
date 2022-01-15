@@ -204,7 +204,7 @@ namespace ProjectManagement.Controllers
                         {
                             return NotFound();
                         }
-                        return RedirectToAction("TemplateSelector", new { id = addedBoard.BoardId }); // return template selector
+                        return RedirectToAction("ImportTemplate", "Dashboard", new { id = addedBoard.BoardId }); // return template selector
                 }
                
             }

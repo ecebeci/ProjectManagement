@@ -1,0 +1,36 @@
+﻿@model IEnumerable<ProjectManagement.Models.Template>
+
+@{
+    ViewData["Title"] = "ImportTemplate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Import Template</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => m.ElementAt(i).TemplateId)
+                </td>
+                <td>
+                    <form asp-action="ImportTemplateLists">
+                        @Html.Hidden("BoardId");
+                        @Html.HiddenFor(m => m.ElementAt(i).TemplateId)
+                        <input type="submit" value="Import this Template" class="btn btn-primary" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

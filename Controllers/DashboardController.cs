@@ -57,6 +57,7 @@ namespace ProjectManagement.Controllers
         }
 
         // GET: Dashboard/CreateList/<BoardId> !
+        [Authorize(Roles = "member")]
         public async Task<ActionResult> CreateList(int id)
         {
             var board = await _context.Board
@@ -133,13 +134,6 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            if (!(await ManagerCheck((int)board.ProjectId, member.MemberId)))
-            {
-                ViewBag.Title = "Access Denied";
-                ViewBag.Message = "You are not project manager on this project! You can't create board. Contact your project manager.";
-                return View("Failed");
-            }
-
             if (ModelState.IsValid)
             {
                 _context.Add(new List { 
@@ -157,6 +151,92 @@ namespace ProjectManagement.Controllers
 
             return View(list);
         }
+
+        // POST: Dashboard/ImportTemplate/<BoardId>
+        [Authorize(Roles = "member")]
+        public async Task<ActionResult> ImportTemplate(int id) // id is board id
+        {
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var board = await _context.Board
+               .Include(m => m.Project)
+               .FirstOrDefaultAsync(m => m.BoardId == id);
+            if (board == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            if (!(ManagerCheck(board.Project, member.MemberId)))
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "You are not project manager on this project! You can't add template. Contact your project manager.";
+                return View("Failed");
+            }
+
+            ViewData["BoardId"] = id;
+            IEnumerable<Template> templates =  _context.Template.Include(l => l.Lists);
+
+            return View(templates);
+        }
+
+        [HttpPost, ActionName("ImportTemplateLists")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ImportTemplateLists(int BoardId, [Bind("TemplateId")] Template template)
+        {
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var projectId = await GetProjectId(BoardId);
+            if (projectId == null) { 
+                return NotFound();
+            }
+
+            if (!MemberExists((int) projectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+
+            template = await _context.Template
+             .Include(m => m.Lists)
+             .FirstOrDefaultAsync(m => m.TemplateId == template.TemplateId);
+
+            if (template == null)
+            {
+                return NotFound();
+            }
+
+            foreach(List list in template.Lists)
+            {
+                list.BoardId = BoardId;
+                list.CreatedDate = DateTime.Now;
+                list.UpdatedDate = DateTime.Now;
+                await CreateList(list);
+            }
+
+            await _context.SaveChangesAsync();
+            
+            if(projectId != null)
+            {
+                await UpdateProjectDate((int) projectId);
+            }
+
+            return RedirectToAction("Index", new { id=BoardId }); // return index
+
+        }
+
 
         private bool BoardExists(int id)
         {
@@ -212,6 +292,20 @@ namespace ProjectManagement.Controllers
             }
 
             return true;
+        }
+
+
+        private async Task<int?> GetProjectId(int boardId)
+        {
+            var board = await _context.Board
+                       .Include(m => m.Project)
+                       .FirstOrDefaultAsync(m => m.BoardId == boardId);
+            if (board == null)
+            {
+                return null;
+            }
+
+            return board.ProjectId;
         }
     }
 }
