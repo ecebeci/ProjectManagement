@@ -24,6 +24,7 @@ namespace ProjectManagement.Data
                  .HasForeignKey(p => p.ManagerId);
 
             // setting up many to many relationship
+            // ProjectMember
             modelBuilder.Entity<ProjectMember>()
                 .HasKey(pm => new { pm.ProjectId, pm.MemberId }); // two primary keys
 
@@ -36,6 +37,20 @@ namespace ProjectManagement.Data
                 .HasOne(p => p.Member)
                 .WithMany(p => p.ProjectMembers)
                 .HasForeignKey(p => p.MemberId);
+
+            //WorkMember
+            modelBuilder.Entity<WorkMember>()
+            .HasKey(wm => new { wm.WorkId, wm.MemberId }); // two primary keys
+
+            modelBuilder.Entity<WorkMember>()
+               .HasOne(wm => wm.Work)
+               .WithMany(wm => wm.WorkMembers)
+               .HasForeignKey(wm => wm.WorkId);
+
+            modelBuilder.Entity<WorkMember>()
+                .HasOne(wm => wm.Member)
+                .WithMany(wm => wm.WorkMembers)
+                .HasForeignKey(wm => wm.MemberId);
 
             var foreignKeysWithCascadeDelete = modelBuilder.Model.GetEntityTypes()
              .SelectMany(t => t.GetForeignKeys())
@@ -53,9 +68,9 @@ namespace ProjectManagement.Data
         public DbSet<Board> Board { get; set; }
         public DbSet<List> List { get; set; }
         public DbSet<Work> Work { get; set; }
-
         public DbSet<Member> Member { get; set; }
         public DbSet<ProjectMember> ProjectMember { get; set; }
+        public DbSet<WorkMember> WorkMember { get; set; }
         public DbSet<ProjectManagement.Models.Template> Template { get; set; }
         public DbSet<ProjectManagement.Models.ViewModels.AddTemplateViewModel> AddTemplateViewModel { get; set; }
     }

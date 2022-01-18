@@ -3,21 +3,38 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectManagement.Data;
 
-namespace ProjectManagement.Data.Migrations
+namespace ProjectManagement.Migrations.Projects
 {
     [DbContext(typeof(ProjectsContext))]
-    partial class ProjectsContextModelSnapshot : ModelSnapshot
+    [Migration("20220118201349_UpdateWorkModel")]
+    partial class UpdateWorkModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("MemberWork", b =>
+                {
+                    b.Property<int>("MembersMemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorksWorkId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MembersMemberId", "WorksWorkId");
+
+                    b.HasIndex("WorksWorkId");
+
+                    b.ToTable("MemberWork");
+                });
 
             modelBuilder.Entity("ProjectManagement.Models.Board", b =>
                 {
@@ -198,9 +215,6 @@ namespace ProjectManagement.Data.Migrations
                     b.Property<int>("ListId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MemberId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -219,24 +233,22 @@ namespace ProjectManagement.Data.Migrations
 
                     b.HasIndex("ListId");
 
-                    b.HasIndex("MemberId");
-
                     b.ToTable("Work");
                 });
 
-            modelBuilder.Entity("ProjectManagement.Models.WorkMember", b =>
+            modelBuilder.Entity("MemberWork", b =>
                 {
-                    b.Property<int>("WorkId")
-                        .HasColumnType("int");
+                    b.HasOne("ProjectManagement.Models.Member", null)
+                        .WithMany()
+                        .HasForeignKey("MembersMemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
-
-                    b.HasKey("WorkId", "MemberId");
-
-                    b.HasIndex("MemberId");
-
-                    b.ToTable("WorkMember");
+                    b.HasOne("ProjectManagement.Models.Work", null)
+                        .WithMany()
+                        .HasForeignKey("WorksWorkId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Board", b =>
@@ -312,30 +324,7 @@ namespace ProjectManagement.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("ProjectManagement.Models.Member", null)
-                        .WithMany("Work")
-                        .HasForeignKey("MemberId");
-
                     b.Navigation("List");
-                });
-
-            modelBuilder.Entity("ProjectManagement.Models.WorkMember", b =>
-                {
-                    b.HasOne("ProjectManagement.Models.Member", "Member")
-                        .WithMany("WorkMembers")
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ProjectManagement.Models.Work", "Work")
-                        .WithMany("WorkMembers")
-                        .HasForeignKey("WorkId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Member");
-
-                    b.Navigation("Work");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Board", b =>
@@ -353,10 +342,6 @@ namespace ProjectManagement.Data.Migrations
                     b.Navigation("ProjectMembers");
 
                     b.Navigation("Projects");
-
-                    b.Navigation("Work");
-
-                    b.Navigation("WorkMembers");
                 });
 
             modelBuilder.Entity("ProjectManagement.Models.Project", b =>
@@ -369,11 +354,6 @@ namespace ProjectManagement.Data.Migrations
             modelBuilder.Entity("ProjectManagement.Models.Template", b =>
                 {
                     b.Navigation("Lists");
-                });
-
-            modelBuilder.Entity("ProjectManagement.Models.Work", b =>
-                {
-                    b.Navigation("WorkMembers");
                 });
 #pragma warning restore 612, 618
         }

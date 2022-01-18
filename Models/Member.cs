@@ -23,7 +23,9 @@ namespace ProjectManagement.Models
 
         public ICollection<Project> Projects { get; set; } // for Project ManagerId
 
-        public ICollection<Work> Works { get; set; } // Every member can have more works
+        public ICollection<WorkMember> WorkMembers { get; set; } // Every member can have more works
+
+        public ICollection<Work> Work { get; set; } 
     }
 
 }

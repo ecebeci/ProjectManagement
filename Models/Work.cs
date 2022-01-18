@@ -13,9 +13,6 @@ namespace ProjectManagement.Models
         public int ListId { get; set; }
         public List List { get; set; }
 
-        public int MemberId { get; set; }
-        public Member Member { get; set; } // ICollection
-
         [Required]
         [StringLength(512)]
         public string Title { get; set; }
@@ -29,5 +26,7 @@ namespace ProjectManagement.Models
         public DateTime? UpdatedDate { get; set; }
 
         public DateTime? Deadline { get; set; }
+
+        public ICollection<WorkMember> WorkMembers { get; set; }
     }
 }
