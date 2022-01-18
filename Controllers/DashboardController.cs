@@ -237,8 +237,15 @@ namespace ProjectManagement.Controllers
 
         }
 
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult> AddTemplate() 
+        {
 
-        private bool BoardExists(int id)
+            return View();
+        }
+
+
+            private bool BoardExists(int id)
         {
             return _context.Board.Any(e => e.BoardId == id);
         }

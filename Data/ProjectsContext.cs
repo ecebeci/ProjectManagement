@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjectManagement.Models.ViewModels;
 
 namespace ProjectManagement.Data
 {
@@ -56,5 +57,6 @@ namespace ProjectManagement.Data
         public DbSet<Member> Member { get; set; }
         public DbSet<ProjectMember> ProjectMember { get; set; }
         public DbSet<ProjectManagement.Models.Template> Template { get; set; }
+        public DbSet<ProjectManagement.Models.ViewModels.AddTemplateViewModel> AddTemplateViewModel { get; set; }
     }
 }
