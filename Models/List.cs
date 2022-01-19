@@ -11,7 +11,7 @@ namespace ProjectManagement.Models
         public int ListId { get; set; }
 
         public int? BoardId { get; set; } 
-        public Board Boards { get; set; }
+        public Board Board { get; set; }
 
         public int? TemplateId { get; set; }
         public Template Template { get; set; } // every Template has boards (one-to-many)

@@ -1,12 +1,10 @@
 ﻿@model ProjectManagement.Models.List
 
-@{
-    ViewData["Title"] = "CreateList";
+@{ 
+    ViewData["Title"] = "Create a List";
 }
 
-<h1>CreateList</h1>
-
-<h4>List</h4>
+<h1>Create a List</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,13 +17,11 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary my-2" />
+                <a asp-route-id="@Model.BoardId" asp-action="Index" class="btn btn-secondary my-2">Back to Dashboard</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-controller="@Model." asp-action="Index" class="btn btn-primary">Back to Dashboard</a>
-</div>
 

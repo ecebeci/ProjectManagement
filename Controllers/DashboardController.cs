@@ -149,6 +149,7 @@ namespace ProjectManagement.Controllers
                 return RedirectToAction("Index", new { id = board.BoardId }); // return index
             }
 
+            list.BoardId = board.BoardId;
             return View(list);
         }
 
@@ -245,7 +246,7 @@ namespace ProjectManagement.Controllers
         }
 
 
-            private bool BoardExists(int id)
+        private bool BoardExists(int id)
         {
             return _context.Board.Any(e => e.BoardId == id);
         }
