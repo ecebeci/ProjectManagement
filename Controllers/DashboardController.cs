@@ -34,23 +34,29 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            var list = await _context.List
-                 .Include(b => b.Works)
-                 .Include(b => b.Board)
-                 .Include(b => b.Board.Project)
-                 .FirstOrDefaultAsync(m => m.BoardId == id);
+            var board = await _context.Board
+                .Include(b => b.Project)
+                .Include(b => b.Lists)
+                    .ThenInclude(a => a.Works)
+                .FirstOrDefaultAsync(m => m.BoardId == id);
 
-            if (!MemberExists((int)list.Board.ProjectId, member.MemberId))
+
+            if (board == null) 
             {
                 return NotFound();
             }
 
-            if (list == null) // if there is no list
+            if (!MemberExists((int)board.Project.ProjectId, member.MemberId)) // check non-authorized access
             {
-                return RedirectToAction("CreateList", new { id = id });
+                return NotFound();
             }
 
-            return View(new DashboardViewModel { Lists = list.Board.Lists.ToList(), Work = new() });
+            if (!board.Lists.Any()) { 
+            return RedirectToAction("CreateList", new { id = id });
+            }
+
+
+            return View(new DashboardViewModel { Lists = board.Lists.ToList(), Work = new() });
         }
 
         // GET: Dashboard/CreateList/<BoardId> !
