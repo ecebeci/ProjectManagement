@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectManagement.Data;
 using ProjectManagement.Models;
+using ProjectManagement.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,27 +34,23 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            var board = await _context.Board
-                 .Include(b => b.Project)
-                 .Include(b => b.Lists)
+            var list = await _context.List
+                 .Include(b => b.Works)
+                 .Include(b => b.Board)
+                 .Include(b => b.Board.Project)
                  .FirstOrDefaultAsync(m => m.BoardId == id);
-            if (board == null)
+
+            if (!MemberExists((int)list.Board.ProjectId, member.MemberId))
             {
                 return NotFound();
             }
 
-            if (!MemberExists((int)board.ProjectId, member.MemberId))
+            if (list == null) // if there is no list
             {
-                return NotFound();
+                return RedirectToAction("CreateList", new { id = id });
             }
 
-            var list = board.Lists;
-            if (list == null || list.Count == 0)
-            {
-                return RedirectToAction("CreateList", new { id = board.BoardId });
-            }
-
-            return View(list);
+            return View(new DashboardViewModel { Lists = list.Board.Lists.ToList(), Work = new() });
         }
 
         // GET: Dashboard/CreateList/<BoardId> !
@@ -81,7 +78,6 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            // TODO : Is Cancelled or Deleted!!!!!!!!!!!!
             if (board.Project.IsCancelled)
             {
                 ViewBag.Title = "Access Denied";
@@ -239,11 +235,82 @@ namespace ProjectManagement.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        public async Task<ActionResult> AddTemplate() 
+        public async Task<ActionResult> AddTemplate()
         {
 
             return View();
+        } 
+
+        [Authorize(Roles = "member")]
+        public async Task<ActionResult> AddWork([Bind("Title")] Work Work, Microsoft.AspNetCore.Http.IFormCollection fc)
+        {
+            Work.ListId = Int16.Parse(fc["ListId"][0]); // Parse ListId string to int
+
+            Member member = await _context.Member.FirstOrDefaultAsync(m => m.Username == User.Identity.Name); // getting member
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var list = await _context.List
+              .Include(m => m.Board)
+              .Include(m => m.Board.Project)
+              .FirstOrDefaultAsync(m => m.ListId == Work.ListId);
+            if (list == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists((int)list.Board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            if (list.Board.Project.IsCancelled)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.BoardId = list.BoardId;
+                return View("Failed");
+            }
+            if (list.Board.Project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.BoardId = list.BoardId;
+                return View("Failed");
+            }
+            else if (list.Board.Project.IsFinished)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is finished. You can't create list";
+                ViewBag.BoardId = list.BoardId;
+                return View("Failed");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(new Work
+                {
+                    Title = Work.Title,
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now,
+                    Priority = 0,
+                    Status = 0,
+                    ListId = Work.ListId,       
+            }
+                );
+                list.Board.UpdatedDate = DateTime.Now;
+                _context.Update(list);
+                await _context.SaveChangesAsync();
+                await UpdateProjectDate((int)list.Board.ProjectId);
+                return RedirectToAction("Index", new { id = list.BoardId }); // return index
+            }
+
+            return RedirectToAction("Index", new { id = list.Board.BoardId });
         }
+
+     
 
 
         private bool BoardExists(int id)

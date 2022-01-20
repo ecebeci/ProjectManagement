@@ -1,37 +1,48 @@
-﻿@model IEnumerable<ProjectManagement.Models.List>;
+﻿@model DashboardViewModel
 
 @{
     ViewData["Title"] = "List";
+    int i = 0;
 }
 
 
 <div class="text-center">
-    <h1 class="display-4 ">@Model.First().Board.Title  </h1>
+    <h1 class="display-4 ">@Model.Lists.First().Board.Title  </h1>
 </div>
 
 
     <div class="row my-3">
-        @foreach (var list in Model)
+        @foreach (var list in Model.Lists)
         {
             <div class="col-3 mb-5">
                 <h5 class="card-title">@list.Title</h5>
                 <ul class="list-group">
                     @if (list.Works != null && list.Works.Count > 0 )
                     {
-                        @foreach (var item in list.Works.OrderBy(x => x.Priority))
+                        @foreach (var work in list.Works.OrderBy(x => x.Priority))
                         {
-                            <li class="list-group-item">
-                                <span style="" class="col-3">&nbsp;&nbsp;</span>
-                                @item.Title
-                            </li>
+                    <li class="list-group-item">
+                        <span style="" class="col-3">&nbsp;&nbsp;</span>
+                        @work.Title
+                        @if(@work.Deadline != null){
+                           @work.Deadline
                         }
-                    }
+                    </li>
+                        }
+                    } 
                     <li class="list-group-item text-muted">
-                        <div id="addWorkButton"> <button class="btn btn-primary" onclick="getElementById('addNewWork').style.display = 'block'; this.style.display = 'none'">+ Add a new work</button> </div>
-                        <div id="addNewWork" style="display:none;">
-                            <input type="text" class="form-control" placeholder="Enter a work name">
-                            <button class="btn btn-primary" value="">Save work</button>
-                            <button class="btn btn-danger " value="" onclick="getElementById('addNewWorkButton').style.display = 'block'; document.getElementById('addNewWork').style.display = 'none';">Cancel</button>
+                        <div id="@("addNewWorkButton" + list.ListId )"> <button class="btn btn-primary" onclick="getElementById('@("addNewWork" + list.ListId )').style.display = 'block'; this.style.display = 'none'">+ Add a new work</button> </div>
+                        <div id="@("addNewWork" + list.ListId )" style="display:none;">
+                           
+                            <form asp-action="AddWork">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                @Html.Hidden("ListId", @Model.Lists[i++].ListId.ToString())                      
+                                <input type="text" class="form-control" asp-for="Work.Title" placeholder="Enter a work name">
+                                <input type="submit" class="btn btn-primary" value="Save new work">
+  
+
+                            </form>
+                                <button class="btn btn-danger " value="" onclick="getElementById('@("addNewWorkButton" + list.ListId )').style.display = 'inline'; document.getElementById('@("addNewWork" + list.ListId )').style.display = 'none';">Cancel</button>
                         </div>
                     </li>
                 </ul>
@@ -42,7 +53,7 @@
         <ul class="list-group">
             <li class="list-group-item text-muted">
                 <div id="addListButton">
-                    <a class="btn btn-primary" asp-action="CreateList" asp-route-id="@Model.FirstOrDefault().BoardId">Create a List</a>
+                    <a class="btn btn-primary" asp-action="CreateList" asp-route-id="@Model.Lists.FirstOrDefault().BoardId">Create a List</a>
                 </div>
             </li>
         </ul>
