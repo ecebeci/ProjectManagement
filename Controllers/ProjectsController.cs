@@ -233,6 +233,13 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
 
+            if (project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is deleted! You can't access.";
+                return View("Failed"); // ./shared/failed
+            }
+
             var ProjectMembers = await _context.ProjectMember
                 .Where(x => x.Project == project)
                 .Include(u => u.Member)
@@ -253,7 +260,7 @@ namespace ProjectManagement.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "member")]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,IsCancelled")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("ProjectId,Name,IsCancelled,IsFinished")] Project project)
         {
             if (id != project.ProjectId)
             {
@@ -266,6 +273,7 @@ namespace ProjectManagement.Controllers
 
             projectFound.Name = project.Name; // Change name
             projectFound.IsCancelled = project.IsCancelled;
+            projectFound.IsFinished = project.IsFinished;
             projectFound.UpdatedDate = DateTime.Now;
             try
                 {    

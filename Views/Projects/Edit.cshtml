@@ -30,6 +30,11 @@
     </div>
 
     <div class="col-auto">
+        @Html.EditorFor(x => x.Project.IsFinished)
+        <label asp-for="Project.IsFinished" class="col-sm-2 col-form-label">Finished</label>
+    </div>
+
+    <div class="col-auto">
         <input type="submit" value="Save Project" class="btn btn-primary" />
     </div>
 </form>

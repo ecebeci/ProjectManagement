@@ -130,6 +130,7 @@ namespace ProjectManagement.Controllers
             }
 
             var project = await _context.Project
+               .Include(m => m.Boards)
                .FirstOrDefaultAsync(m => m.ProjectId == projectId)
                ;
             if (project == null)
@@ -156,8 +157,22 @@ namespace ProjectManagement.Controllers
                 ViewBag.Message = "You are not project manager on this project! You can't create board. Contact your project manager.";
                 return View("Failed");
             }
-  
-            return View(new Board { ProjectId = (int)projectId});
+
+            if (project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is deleted! You can't access.";
+                return View("Failed"); // ./shared/failed
+            }
+
+            if (project.IsCancelled)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is cancelled! You can't access.";
+                return View("Failed"); // ./shared/failed
+            }
+
+            return View(new Board { ProjectId = (int)projectId, Project = project});
         }
 
         // POST: Boards/Create
@@ -244,7 +259,23 @@ namespace ProjectManagement.Controllers
                 ViewBag.Title = "Access Denied";
                 ViewBag.Message = "You are not project manager on this project! You can't edit board. Contact your project manager.";
                 return View("Failed");
-            }    
+            }
+
+            if (board.Project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is deleted! You can't access.";
+                return View("Failed"); // ./shared/failed
+            }
+
+            if (board.Project.IsCancelled)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is cancelled! You can't access.";
+                return View("Failed"); // ./shared/failed
+            }
+
+
 
             ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
             return View(board);

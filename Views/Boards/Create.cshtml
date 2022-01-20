@@ -35,5 +35,9 @@
 
 <hr />
 <div>
-    <a class="btn btn-secondary" asp-action="Index" asp-route-id = "@Model.ProjectId">Back to Board List</a>
+    @if (Model.Project.Boards.Any()) {
+        <a class="btn btn-secondary" asp-action="Index" asp-route-id="@Model.ProjectId">Back to Board List</a>
+    }
+    <a class="btn btn-secondary" asp-action="index" asp-controller="Projects" asp-route-id="@Model.ProjectId">Back to Projects</a>
 </div>
+
