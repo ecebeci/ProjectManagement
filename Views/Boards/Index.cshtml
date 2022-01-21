@@ -50,10 +50,12 @@
                     @if (Model.ProjectMember.MemberId == item.Project.ManagerId)  // Show Edit and Delete Button to Project's Managers
                     {
                         <div class="row">
-                            <div class="col">
-                                <a asp-action="Edit" asp-route-id="@item.BoardId" class="btn btn-success m-2 ">Edit Board</a>
-                                <a asp-action="Delete" asp-route-id="@item.BoardId" class="btn btn-danger">Delete Board</a>
+                            <div class="row col-sm  ">
+                                <a asp-action="Edit" asp-route-id="@item.BoardId" class="btn btn-success ">Edit Board</a>
                             </div>
+                            <div class="row col-sm ms-1 ">
+                                <a asp-action="Delete" asp-route-id="@item.BoardId" class="btn btn-danger">Delete Board</a>
+                            </div>  
                         </div>
                     }
                 </div>

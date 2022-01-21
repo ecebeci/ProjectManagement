@@ -150,7 +150,6 @@ namespace ProjectManagement.Controllers
                 return NotFound();
             }
 
-            // TODO: Is not working!
             if (!(await ManagerCheck((int) projectId, member.MemberId)))
             {
                 ViewBag.Title = "Access Denied";
@@ -161,14 +160,21 @@ namespace ProjectManagement.Controllers
             if (project.IsDeleted)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "Project is deleted! You can't access.";
+                ViewBag.Message = "Project is deleted! You can't add a board.";
                 return View("Failed"); // ./shared/failed
             }
 
             if (project.IsCancelled)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "Project is cancelled! You can't access.";
+                ViewBag.Message = "Project is cancelled! You can't add a board.";
+                return View("Failed"); // ./shared/failed
+            }
+
+            if (project.IsFinished)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is finished! You can't add a board.";
                 return View("Failed"); // ./shared/failed
             }
 
@@ -224,6 +230,7 @@ namespace ProjectManagement.Controllers
                
             }
 
+
             return View(board);
         }
 
@@ -277,7 +284,7 @@ namespace ProjectManagement.Controllers
 
 
 
-            ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
+            ViewData["ProjectId"] = board.ProjectId;
             return View(board);
         }
 
@@ -330,7 +337,8 @@ namespace ProjectManagement.Controllers
                 await UpdateProjectDate((int)board.ProjectId);
                 return RedirectToAction("Index", new { id = board.ProjectId }); // return index
             }
-            ViewData["ProjectId"] = new SelectList(_context.Project, "ProjectId", "Name", board.ProjectId);
+             
+            ViewData["ProjectId"] = board.ProjectId;
             return View(board);
         }
 
@@ -379,11 +387,27 @@ namespace ProjectManagement.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // TODO: Delete board with LISTS and WORKS
-            var board = await _context.Board.FindAsync(id);
+            var board = await _context.Board
+                .Include(b=> b.Lists)
+                     .ThenInclude(b => b.Works)
+                        .ThenInclude(b => b.WorkMembers)
+                .FirstAsync(b=> b.BoardId == id);
+
+            foreach(List List in board.Lists) {
+                foreach(Work Work in List.Works)
+                {
+                    foreach(WorkMember WorkMember in Work.WorkMembers) {
+                     _context.WorkMember.Remove(WorkMember);
+                    }
+
+                    _context.Work.Remove(Work);
+                }
+                _context.List.Remove(List);
+            }
             _context.Board.Remove(board);
             await _context.SaveChangesAsync();
             await UpdateProjectDate((int)board.ProjectId);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", new { id = board.ProjectId }); // return index
         }
 
         private bool BoardExists(int id)

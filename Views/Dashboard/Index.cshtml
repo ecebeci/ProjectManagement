@@ -48,14 +48,12 @@
                            
                             <form asp-action="AddWork">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                @Html.Hidden("ListId", @Model.Lists[i++].ListId.ToString())                      
+                                @Html.Hidden("ListId", @Model.Lists[i++].ListId.ToString())
                                 <input type="text" class="form-control" asp-for="Work.Title" placeholder="Enter a work name">
                                 <input type="submit" class="btn btn-primary" value="Save new work">
-  
-
+                                <div class="btn btn-danger " value="" onclick="getElementById('@("addNewWorkButton" + list.ListId )').style.display = 'block'; document.getElementById('@("addNewWork" + list.ListId )').style.display = 'none';">Cancel</div>
                             </form>
-                                <button class="btn btn-danger " value="" onclick="getElementById('@("addNewWorkButton" + list.ListId )').style.display = 'inline'; document.getElementById('@("addNewWork" + list.ListId )').style.display = 'none';">Cancel</button>
-                        </div>
+</div>
                     </li>
                 </ul>
             </div>

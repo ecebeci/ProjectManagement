@@ -281,21 +281,21 @@ namespace ProjectManagement.Controllers
             if (list.Board.Project.IsCancelled)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.Message = "The project is cancelled. You can't create work.";
                 ViewBag.BoardId = list.BoardId;
                 return View("Failed");
             }
             if (list.Board.Project.IsDeleted)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.Message = "The project is cancelled. You can't create work,";
                 ViewBag.BoardId = list.BoardId;
                 return View("Failed");
             }
             else if (list.Board.Project.IsFinished)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "The project is finished. You can't create list";
+                ViewBag.Message = "The project is finished. You can't create work.";
                 ViewBag.BoardId = list.BoardId;
                 return View("Failed");
             }

@@ -296,8 +296,23 @@ namespace ProjectManagement.Controllers
                 }
                 }
 
-                return RedirectToAction("Edit", new { id = id }); // Return edit page
+            project = _context.Project
+                              .Where(x => x.ProjectId == project.ProjectId)
+                              .FirstOrDefault();
 
+            var ProjectMembers = await _context.ProjectMember
+            .Where(x => x.Project == project)
+            .Include(u => u.Member)
+            .Include(u => u.Project.Manager).ToListAsync();
+
+            ProjectProjectMembers ProjectProjectMembers = new() // Setting View Model
+            {
+                Project = project,
+                ProjectMembers = ProjectMembers
+            };
+
+            ViewBag.UpdateMessage1 = "Project updated successfully!"; // just work on view() not on returnToAction.
+            return View(ProjectProjectMembers); // Return edit page
         }
 
     
@@ -379,6 +394,7 @@ namespace ProjectManagement.Controllers
                     }
              }
 
+            TempData["UpdateMessage2"] = "Project member added successfully!"; // just work on view() not on returnToAction.
 
             return RedirectToAction("Edit", new { id = project.ProjectId });
         }
@@ -486,7 +502,8 @@ namespace ProjectManagement.Controllers
                 }
             }
 
-                return RedirectToAction("Edit", new { id = pm.ProjectId });
+            TempData["UpdateMessage2"] = "A project member deleted on project member list successfully!";
+            return RedirectToAction("Edit", new { id = pm.ProjectId });
         }
 
         // POST: Projects/Delete/5
