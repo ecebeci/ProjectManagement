@@ -38,6 +38,8 @@ namespace ProjectManagement.Controllers
                 .Include(b => b.Project)
                 .Include(b => b.Lists)
                     .ThenInclude(a => a.Works)
+                        .ThenInclude(b => b.WorkMembers)
+                            .ThenInclude(b => b.Member)
                 .FirstOrDefaultAsync(m => m.BoardId == id);
 
 
@@ -223,10 +225,15 @@ namespace ProjectManagement.Controllers
 
             foreach(List list in template.Lists)
             {
-                list.BoardId = BoardId;
-                list.CreatedDate = DateTime.Now;
-                list.UpdatedDate = DateTime.Now;
-                await CreateList(list);
+                var createList = new List
+                {
+                    Title = list.Title,
+                    BoardId = BoardId,
+                    CreatedDate = DateTime.Now,
+                    UpdatedDate = DateTime.Now
+                };
+
+                await CreateList(createList);
             }
 
             await _context.SaveChangesAsync();
@@ -241,9 +248,8 @@ namespace ProjectManagement.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        public async Task<ActionResult> AddTemplate()
+        public ActionResult AddTemplate() // async task
         {
-
             return View();
         } 
 
@@ -296,11 +302,12 @@ namespace ProjectManagement.Controllers
 
             if (ModelState.IsValid)
             {
+                var dt = DateTime.Now;
                 _context.Add(new Work
                 {
                     Title = Work.Title,
-                    CreatedDate = DateTime.Now,
-                    UpdatedDate = DateTime.Now,
+                    CreatedDate = dt,
+                    UpdatedDate = dt,
                     Priority = 0,
                     Status = 0,
                     ListId = Work.ListId,       
@@ -309,6 +316,9 @@ namespace ProjectManagement.Controllers
                 list.Board.UpdatedDate = DateTime.Now;
                 _context.Update(list);
                 await _context.SaveChangesAsync();
+                var work = await _context.Work.FirstOrDefaultAsync(w => w.ListId == list.ListId && w.CreatedDate == dt && w.Title == Work.Title); // Concurrency ?????
+                var workmember = new WorkMember { WorkId = work.WorkId , MemberId = member.MemberId };
+                _context.Add(workmember);
                 await UpdateProjectDate((int)list.Board.ProjectId);
                 return RedirectToAction("Index", new { id = list.BoardId }); // return index
             }

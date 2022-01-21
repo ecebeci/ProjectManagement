@@ -24,8 +24,20 @@
                     <li class="list-group-item">
                         <span style="" class="col-3">&nbsp;&nbsp;</span>
                         @work.Title
-                        @if(@work.Deadline != null){
-                           @work.Deadline
+                        <br />
+
+                        @if (@work.Deadline != null)
+                        {
+                            <div>Deadline:  @work.Deadline</div>
+
+                        }
+                        @if (@work.WorkMembers.Any())
+                        {
+                            <div class="text-left">Work Member(s)</div>
+                            foreach (var workMember in work.WorkMembers)
+                            {
+                                <div class="text-left">  @workMember.Member.Name </div>
+                            }
                         }
                     </li>
                         }

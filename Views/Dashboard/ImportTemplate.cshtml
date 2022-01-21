@@ -21,11 +21,11 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(m => m.ElementAt(i).TemplateId)
+                    @Html.DisplayFor(m => m.ElementAt(i).Name)
                 </td>
                 <td>
                     <form asp-action="ImportTemplateLists">
-                        @Html.Hidden("BoardId");
+                        @Html.Hidden("BoardId")
                         @Html.HiddenFor(m => m.ElementAt(i).TemplateId)
                         <input type="submit" value="Import this Template" class="btn btn-primary" />
                     </form>

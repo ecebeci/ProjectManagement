@@ -63,7 +63,7 @@ namespace ProjectManagement.Data
 					CreatedDate = DateTime.Now 
 				};
 				ProjectsContext.Add(project);
-				for (int i = 1; i <= 10; i++)
+				for (int i = 1; i <= 5; i++)
 				{
 					ProjectsContext.Board.Add(
 						new Board
@@ -79,10 +79,11 @@ namespace ProjectManagement.Data
 				project = new Project {
 					Name = "Construction Project",
 					ManagerId = 2 ,
-					CreatedDate = DateTime.Now
+					CreatedDate = DateTime.Now,
+					IsFinished = true
 				};
 				ProjectsContext.Add(project);
-				for (int i = 1; i <= 10; i++)
+				for (int i = 1; i <= 5; i++)
 				{
 					ProjectsContext.Board.Add(
 						new Board
@@ -98,8 +99,37 @@ namespace ProjectManagement.Data
 				// Add Members for each Project
 				ProjectsContext.Add(new ProjectMember { MemberId = 2, ProjectId = 2 });
 				ProjectsContext.Add(new ProjectMember { MemberId = 3, ProjectId = 3 });
-				ProjectsContext.Add(new ProjectMember { MemberId = 4, ProjectId = 3 });  
+				ProjectsContext.Add(new ProjectMember { MemberId = 4, ProjectId = 3 });
+				ProjectsContext.SaveChanges();
 
+				List list = ProjectsContext.List.FirstOrDefault();
+				Template template = ProjectsContext.Template.FirstOrDefault();
+
+			if (list == null && template == null) { 
+				ProjectsContext.Add(new Template { Name = "Kanban" });
+				ProjectsContext.Add(new Template { Name = "Scrum" });
+
+				ProjectsContext.SaveChanges();
+
+				var createdTemplates = ProjectsContext.Template.OrderByDescending(m => m.TemplateId).ToList();
+
+				ProjectsContext.Add(new List {  Title = "Backlog", TemplateId = createdTemplates[0].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Design", TemplateId = createdTemplates[0].TemplateId });
+				ProjectsContext.Add(new List {  Title = "To-do", TemplateId = createdTemplates[0].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Doing", TemplateId = createdTemplates[0].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Code Review", TemplateId = createdTemplates[0].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Testing", TemplateId = createdTemplates[0].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Done", TemplateId = createdTemplates[0].TemplateId });
+
+				ProjectsContext.Add(new List {  Title = "Backlog", TemplateId = createdTemplates[1].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Next Sprint", TemplateId = createdTemplates[1].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Sprint Backlog", TemplateId = createdTemplates[1].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Dev", TemplateId = createdTemplates[1].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Code Review", TemplateId = createdTemplates[1].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Testing", TemplateId = createdTemplates[1].TemplateId });
+				ProjectsContext.Add(new List {  Title = "Done Sprint Date", TemplateId = createdTemplates[1].TemplateId });
+
+				}
 
 				ProjectsContext.SaveChanges();
 			}	
