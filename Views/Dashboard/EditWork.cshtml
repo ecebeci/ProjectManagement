@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="View">
+        <form asp-action="EditWork">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="WorkId" />
             <div class="form-group">
@@ -42,4 +42,10 @@
     </div>
 </div>
 
+<form asp-action="DeleteWork">
+    <input type="hidden" asp-for="WorkId" />
+    <div class="form-group">
+        <input type="submit" value="Delete Work" class="btn btn-primary" />
+    </div>
+</form>
 

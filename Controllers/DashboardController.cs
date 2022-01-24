@@ -353,21 +353,21 @@ namespace ProjectManagement.Controllers
             if (board.Project.IsCancelled)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.Message = "The project is cancelled. You can't edit work!";
                 ViewBag.BoardId = board.BoardId;
                 return View("Failed");
             }
             if (board.Project.IsDeleted)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.Message = "The project is deleted. You can't edit work!";
                 ViewBag.BoardId = board.BoardId;
                 return View("Failed");
             }
             else if (board.Project.IsFinished)
             {
                 ViewBag.Title = "Access Denied";
-                ViewBag.Message = "The project is finished. You can't create list";
+                ViewBag.Message = "The project is finished. You can't edit work!";
                 ViewBag.BoardId = board.BoardId;
                 return View("Failed");
             }
@@ -376,7 +376,65 @@ namespace ProjectManagement.Controllers
             return View(work);
         }
 
-        private bool BoardExists(int id)
+        [Authorize(Roles = "member")]
+        public async Task<ActionResult> DeleteWork([Bind("WorkId")] Work Work)
+        {
+            Member member = await _context.Member
+               .FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var work = await GetWorkObject(Work.WorkId);
+            var board = work.List.Board;
+
+            if (board == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            if (board.Project.IsCancelled)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is cancelled. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            if (board.Project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is deleted. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            else if (board.Project.IsFinished)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is finished. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+
+
+            foreach (WorkMember WorkMember in work.WorkMembers)
+            {
+                _context.WorkMember.Remove(WorkMember);
+            }
+
+            _context.Work.Remove(work);
+            await _context.SaveChangesAsync();
+            await UpdateDates((int)board.BoardId);
+
+            return View("Index", new DashboardViewModel { Lists = board.Lists.ToList() });
+        }
+
+            private bool BoardExists(int id)
         {
             return _context.Board.Any(e => e.BoardId == id);
         }
@@ -409,6 +467,34 @@ namespace ProjectManagement.Controllers
             return true;
         }
 
+        private async Task<bool> UpdateDates(int boardId)
+        {
+            var board = await _context.Board
+                .Include(m => m.Project)
+            .FirstOrDefaultAsync(m => m.BoardId == boardId);
+            if (board == null)
+            {
+                return false;
+            }
+
+            var project = board.Project;
+
+            try
+            {
+                board.UpdatedDate = DateTime.Now;
+                project.UpdatedDate = DateTime.Now;
+                _context.Update(project);
+                _context.Update(board);
+                await _context.SaveChangesAsync(); // save, before to use new id's
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private async Task<bool> UpdateProjectDate(int projectId)
         {
             var project = await _context.Project
@@ -432,7 +518,6 @@ namespace ProjectManagement.Controllers
             return true;
         }
 
-
         private async Task<int?> GetProjectId(int boardId)
         {
             var board = await _context.Board
@@ -450,6 +535,7 @@ namespace ProjectManagement.Controllers
         private async Task<Work> GetWorkObject(int workId)
         {
             var work = await _context.Work
+                       .Include(m => m.WorkMembers)
                        .Include(m => m.List)
                             .ThenInclude(m => m.Board)
                                 .ThenInclude(m => m.Project)
