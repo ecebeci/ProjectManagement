@@ -5,9 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>View</h1>
+<h1>Edit Work</h1>
 
-<h4>Work</h4>
+<h2>Edit work details</h2>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -35,17 +35,22 @@
                 <span asp-validation-for="Deadline" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary my-2" />
                 <a class="btn btn-secondary" asp-action="Index" asp-route-id="@Model.List.BoardId">Back to List</a>
             </div>
         </form>
     </div>
 </div>
-
+<hr />
+<h2>Delete work</h2>
+<h3>Are you sure you want to delete work Project?</h3>
+<h6>
+    If you click "Delete" button, the work you selected will be gone. Warning! There is no possible to revive deleted work.
+</h6>
 <form asp-action="DeleteWork">
     <input type="hidden" asp-for="WorkId" />
     <div class="form-group">
-        <input type="submit" value="Delete Work" class="btn btn-primary" />
+        <input type="submit" value="Delete Work" class="btn btn-danger my-2" />
     </div>
 </form>
 

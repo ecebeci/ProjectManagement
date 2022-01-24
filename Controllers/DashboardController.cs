@@ -326,7 +326,7 @@ namespace ProjectManagement.Controllers
             return RedirectToAction("Index", new { id = list.Board.BoardId });
         }
 
-        // POST: Dashboard/EditWork/<WorkId>
+        //Dashboard/EditWork/<WorkId>
         [Authorize(Roles = "member")]
         public async Task<ActionResult> EditWork(int id) // id is work id
         {
@@ -371,7 +371,6 @@ namespace ProjectManagement.Controllers
                 ViewBag.BoardId = board.BoardId;
                 return View("Failed");
             }
-
 
             return View(work);
         }
