@@ -108,7 +108,7 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
 
-            return View(new List { BoardId = board.BoardId });
+            return View(new List { BoardId = board.BoardId , Board = board});
         }
 
         // POST: Boards/Create
@@ -326,8 +326,55 @@ namespace ProjectManagement.Controllers
             return RedirectToAction("Index", new { id = list.Board.BoardId });
         }
 
-     
+        // POST: Dashboard/EditWork/<WorkId>
+        [Authorize(Roles = "member")]
+        public async Task<ActionResult> EditWork(int id) // id is work id
+        {
+            Member member = await _context.Member
+                .FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
 
+            var work = await GetWorkObject(id);
+            var board = work.List.Board;
+
+            if (board == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            if (board.Project.IsCancelled)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            if (board.Project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is cancelled. You can't create list";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            else if (board.Project.IsFinished)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is finished. You can't create list";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+
+
+            return View(work);
+        }
 
         private bool BoardExists(int id)
         {
@@ -397,6 +444,22 @@ namespace ProjectManagement.Controllers
             }
 
             return board.ProjectId;
+        }
+        /// <summary>This function takes <c>workId</c> to get their related List->Board->Project 
+        /// objects. It returns work object for flexibility </summary>
+        private async Task<Work> GetWorkObject(int workId)
+        {
+            var work = await _context.Work
+                       .Include(m => m.List)
+                            .ThenInclude(m => m.Board)
+                                .ThenInclude(m => m.Project)
+                       .FirstOrDefaultAsync(m => m.WorkId == workId);
+            if (work == null)
+            {
+                return null;
+            }
+
+            return work;
         }
     }
 }

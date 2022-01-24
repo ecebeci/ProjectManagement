@@ -11,53 +11,53 @@
 </div>
 
 
-    <div class="row my-3">
-        @foreach (var list in Model.Lists)
-        {
-            <div class="col-3 mb-5">
-                <h5 class="card-title">@list.Title</h5>
-                <ul class="list-group">
-                    @if (list.Works != null && list.Works.Count > 0 )
+<div class="row my-3">
+    @foreach (var list in Model.Lists)
+    {
+        <div class="col-3 mb-5">
+            <h5 class="card-title">@list.Title</h5>
+            <ul class="list-group">
+                @if (list.Works != null && list.Works.Count > 0)
+                {
+                    @foreach (var work in list.Works.OrderBy(x => x.Priority))
                     {
-                        @foreach (var work in list.Works.OrderBy(x => x.Priority))
-                        {
-                    <li class="list-group-item">
-                        <span style="" class="col-3">&nbsp;&nbsp;</span>
-                        @work.Title
-                        <br />
-
-                        @if (@work.Deadline != null)
-                        {
-                            <div>Deadline:  @work.Deadline</div>
-
-                        }
-                        @if (@work.WorkMembers.Any())
-                        {
-                            <div class="text-left">Work Member(s)</div>
-                            foreach (var workMember in work.WorkMembers)
+                        <li class="list-group-item">
+                            <span style="" class="col-3">&nbsp;&nbsp;</span>
+                            @work.Title
+                            <br />
+                            @if (@work.Deadline != null)
                             {
-                                <div class="text-left">  @workMember.Member.Name </div>
+                                <div>Deadline:  @work.Deadline</div>
+
                             }
-                        }
-                    </li>
-                        }
-                    } 
-                    <li class="list-group-item text-muted">
-                        <div id="@("addNewWorkButton" + list.ListId )"> <button class="btn btn-primary" onclick="getElementById('@("addNewWork" + list.ListId )').style.display = 'block'; this.style.display = 'none'">+ Add a new work</button> </div>
-                        <div id="@("addNewWork" + list.ListId )" style="display:none;">
-                           
-                            <form asp-action="AddWork">
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                @Html.Hidden("ListId", @Model.Lists[i++].ListId.ToString())
-                                <input type="text" class="form-control" asp-for="Work.Title" placeholder="Enter a work name">
-                                <input type="submit" class="btn btn-primary" value="Save new work">
-                                <div class="btn btn-danger " value="" onclick="getElementById('@("addNewWorkButton" + list.ListId )').style.display = 'block'; document.getElementById('@("addNewWork" + list.ListId )').style.display = 'none';">Cancel</div>
-                            </form>
-</div>
-                    </li>
-                </ul>
-            </div>
-        }
+                            @if (@work.WorkMembers.Any())
+                            {
+                                <div class="text-left">Work Member(s)</div>
+                                foreach (var workMember in work.WorkMembers)
+                                {
+                                    <div class="text-left">  @workMember.Member.Name </div>
+                                }
+                            }
+                            <a asp-route-id="@work.WorkId" asp-action="EditWork" class="btn btn-primary">Edit work</a>
+                        </li>
+                    }
+                }
+                <li class="list-group-item text-muted">
+                    <div id="@("addNewWorkButton" + list.ListId )"> <button class="btn btn-primary" onclick="getElementById('@("addNewWork" + list.ListId )').style.display = 'block'; this.style.display = 'none'">+ Add a new work</button> </div>
+                    <div id="@("addNewWork" + list.ListId )" style="display:none;">
+
+                        <form asp-action="AddWork">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            @Html.Hidden("ListId", @Model.Lists[i++].ListId.ToString())
+                            <input type="text" class="form-control" asp-for="Work.Title" placeholder="Enter a work name">
+                            <input type="submit" class="btn btn-primary" value="Save new work">
+                            <div class="btn btn-danger " value="" onclick="getElementById('@("addNewWorkButton" + list.ListId )').style.display = 'block'; document.getElementById('@("addNewWork" + list.ListId )').style.display = 'none';">Cancel</div>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    }
 
     <div class="col-3 mt-4">
         <ul class="list-group">
@@ -68,7 +68,7 @@
             </li>
         </ul>
     </div>
-        @*<div class="col-3">
+    @*<div class="col-3">
             <ul class="list-group">
                 <li class="list-group-item text-muted">
                     <div id="addListButton"> <button class="btn btn-primary" onclick="getElementById('addNewList').style.display = 'block'; document.getElementById('addListButton').style.display = 'none';">+ Add a new list!</button> </div>
@@ -80,6 +80,6 @@
                 </li>
             </ul>
         </div>*@
-    </div>
+</div>
 
 
