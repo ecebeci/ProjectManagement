@@ -21,11 +21,16 @@
                 {
                     @foreach (var work in list.Works.OrderBy(x => x.Priority))
                     {
+                      
                 <li class="list-group-item">
+                    <div class="fs-3"> @work.Title </div>
+                    <br />
+                    Priority:
+                    <span style="" class="col-3">&nbsp;&nbsp;</span>
                     @switch (work.Priority)
                     {
                         case 0:
-                            <span style="" class="col-3">&nbsp;&nbsp;</span>
+                            <span style="" class="col-3">Low</span>
                             break;
                         case 1:
                             <span style="" class="col-3">Medium</span>
@@ -38,15 +43,20 @@
                             break;
 
                     }
-                    <span style="" class="col-3">&nbsp;&nbsp;</span>
-                    @work.Title
+
                     <br />
                     @if (@work.Deadline != null)
                     {
-                        <div>Deadline:  @work.Deadline</div>
-
+                        if (@work.Deadline < DateTime.Now && work.Status != 3)
+                        {
+                            <div class="text-danger">Deadline is over!</div>
+                            <div>Deadline:  @work.Deadline</div>
+                        }
+                        else
+                        {
+                            <div>Deadline:  @work.Deadline</div>
+                        }
                     }
-
                     @if (@work.WorkMembers.Any())
                     {
                         foreach (var workMember in work.WorkMembers)
