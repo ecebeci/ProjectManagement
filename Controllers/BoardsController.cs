@@ -281,6 +281,12 @@ namespace ProjectManagement.Controllers
                 ViewBag.Message = "Project is cancelled! You can't access.";
                 return View("Failed"); // ./shared/failed
             }
+            if (board.Project.IsFinished)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "Project is finished! You can't access.";
+                return View("Failed"); // ./shared/failed
+            }
 
 
 

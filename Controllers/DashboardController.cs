@@ -58,7 +58,7 @@ namespace ProjectManagement.Controllers
             }
 
 
-            return View(new DashboardViewModel { Lists = board.Lists.ToList(), Work = new() });
+            return View("Index", new DashboardViewModel { Lists = board.Lists.ToList() , MemberId= member.MemberId});
         }
 
         // GET: Dashboard/CreateList/<BoardId> !
@@ -372,7 +372,234 @@ namespace ProjectManagement.Controllers
                 return View("Failed");
             }
 
-            return View(work);
+            return View(new EditWorkViewModel { Work = work });
+        }
+
+        [HttpPost, ActionName("EditWork")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditWork(EditWorkViewModel workPosted)
+        {
+            Member member = await _context.Member
+               .FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var work = await GetWorkObject(workPosted.Work.WorkId);
+
+            var board = work.List.Board;
+
+            if (board == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists((int)board.ProjectId, member.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            if (board.Project.IsCancelled)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is cancelled. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            if (board.Project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is deleted. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            else if (board.Project.IsFinished)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is finished. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+
+            if(workPosted.Work.Priority > 3 || workPosted.Work.Status > 3)
+            {
+                ViewBag.Title = "Process Denied";
+                ViewBag.Message = "Unacceptable value(s)!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    work.Title = workPosted.Work.Title;
+                    work.Status = workPosted.Work.Status;
+                    work.Priority = workPosted.Work.Priority;
+                    work.Deadline = workPosted.Work.Deadline;
+                    _context.Update(work);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    if (!WorkExists(work.WorkId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        ViewBag.Title = "Unexpected Error";
+                        ViewBag.Message = ex.HResult;
+                        return View("Failed");
+                    }
+                }
+                await UpdateProjectDate((int)board.ProjectId);
+                return RedirectToAction("Index", new { id = board.BoardId });
+            }
+
+            workPosted.Work.WorkMembers = work.WorkMembers;
+
+            return View(workPosted);
+        }
+
+        [HttpPost, ActionName("DeleteMember")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMember(EditWorkViewModel workPosted)
+        {
+            Member member = await _context.Member
+               .FirstOrDefaultAsync(m => m.Username == User.Identity.Name);
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var work = await GetWorkObject(workPosted.Work.WorkId);
+
+            var board = work.List.Board;
+
+            if (board == null)
+            {
+                return NotFound();
+            }
+
+            if (!MemberExists((int)board.ProjectId, workPosted.WorkMember.MemberId)) // check non-authorized access
+            {
+                return NotFound();
+            }
+
+            if (board.Project.IsCancelled)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is cancelled. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            if (board.Project.IsDeleted)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is deleted. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+            else if (board.Project.IsFinished)
+            {
+                ViewBag.Title = "Access Denied";
+                ViewBag.Message = "The project is finished. You can't delete work!";
+                ViewBag.BoardId = board.BoardId;
+                return View("Failed");
+            }
+
+                try
+                {     
+                var removedWorkMember = await _context.WorkMember.FirstOrDefaultAsync(w => w.MemberId == workPosted.WorkMember.MemberId && w.WorkId == workPosted.Work.WorkId);
+                if(removedWorkMember != null)
+                    {
+                    _context.WorkMember.Remove(removedWorkMember);
+                    await _context.SaveChangesAsync();
+                    await UpdateDates((int)board.BoardId);
+                }
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    if (!WorkExists(work.WorkId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        ViewBag.Title = "Unexpected Error";
+                        ViewBag.Message = ex.HResult;
+                        return View("Failed");
+                    }
+                }
+
+            return RedirectToAction("EditWork", new { id = workPosted.Work.WorkId });
+        }
+
+        [HttpPost, ActionName("AddMemberWork")]
+        [Authorize(Roles = "member")]
+        public async Task<ActionResult> AddMemberWork(EditWorkViewModel EditWorkViewModel)
+        {
+            if (EditWorkViewModel.WorkMember.Member.Username == null)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "You have entered invalid username. Please check the name!";
+                return View("Failed");
+            }
+
+            EditWorkViewModel.WorkMember.Member = await _context.Member
+                         .Where(x => x.Username == EditWorkViewModel.WorkMember.Member.Username)
+                         .FirstOrDefaultAsync();
+
+            if (EditWorkViewModel.WorkMember.Member == null)
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "The username which you entered is not registered! Please check the name again!";
+                return View("Failed");
+            }
+
+
+            var WorkMemberCheck = await _context.WorkMember
+                                       .Include(x => x.Member)
+                                       .Where(x => x.WorkId == EditWorkViewModel.Work.WorkId)
+                                       .Where(x => x.Member.Username == EditWorkViewModel.WorkMember.Member.Username)
+                                       .ToListAsync();
+
+            if (WorkMemberCheck.Any())
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "You entered a person who already exists in the project. Please check the name!";
+                return View("Failed");
+            }
+
+            var work = await GetWorkObject(EditWorkViewModel.Work.WorkId);
+
+            if (!MemberExists((int)work.List.Board.ProjectId, EditWorkViewModel.WorkMember.Member.MemberId)) // check non-authorized access
+            {
+                ViewBag.Title = "Error";
+                ViewBag.Message = "You entered a person which is not member of project. Please check the name or add that on project!";
+                return View("Failed");
+            }
+
+            try
+            {
+                _context.WorkMember.Add(new WorkMember
+                {
+                    WorkId = EditWorkViewModel.Work.WorkId,
+                    MemberId = EditWorkViewModel.WorkMember.Member.MemberId
+                });
+
+                await _context.SaveChangesAsync();
+                await UpdateDates((int)work.List.BoardId);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+            }
+
+
+            return RedirectToAction("EditWork", new { id = EditWorkViewModel.Work.WorkId });
         }
 
         [Authorize(Roles = "member")]
@@ -430,7 +657,7 @@ namespace ProjectManagement.Controllers
             await _context.SaveChangesAsync();
             await UpdateDates((int)board.BoardId);
 
-            return View("Index", new DashboardViewModel { Lists = board.Lists.ToList() });
+            return RedirectToAction("Index", new { id = board.BoardId });
         }
 
             private bool BoardExists(int id)
@@ -535,6 +762,7 @@ namespace ProjectManagement.Controllers
         {
             var work = await _context.Work
                        .Include(m => m.WorkMembers)
+                            .ThenInclude(m => m.Member)
                        .Include(m => m.List)
                             .ThenInclude(m => m.Board)
                                 .ThenInclude(m => m.Project)
@@ -545,6 +773,11 @@ namespace ProjectManagement.Controllers
             }
 
             return work;
+        }
+
+        private bool WorkExists(int id)
+        {
+            return _context.Work.Any(e => e.WorkId == id);
         }
     }
 }

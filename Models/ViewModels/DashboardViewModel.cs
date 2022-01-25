@@ -9,5 +9,6 @@ namespace ProjectManagement.Models.ViewModels
     {
         public List<ProjectManagement.Models.List> Lists { get; set; }
         public Work Work { get; set; } // for submit created work
+        public int MemberId { get; set; }
     }
 }

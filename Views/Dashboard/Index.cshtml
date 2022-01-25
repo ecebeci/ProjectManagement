@@ -22,6 +22,22 @@
                     @foreach (var work in list.Works.OrderBy(x => x.Priority))
                     {
                 <li class="list-group-item">
+                    @switch (work.Priority)
+                    {
+                        case 0:
+                            <span style="" class="col-3">&nbsp;&nbsp;</span>
+                            break;
+                        case 1:
+                            <span style="" class="col-3">Medium</span>
+                            break;
+                        case 2:
+                            <span style="" class="col-3">High</span>
+                            break;
+                        case 3:
+                            <span style="" class="col-3 text-danger">Urgent!</span>
+                            break;
+
+                    }
                     <span style="" class="col-3">&nbsp;&nbsp;</span>
                     @work.Title
                     <br />
@@ -30,12 +46,16 @@
                         <div>Deadline:  @work.Deadline</div>
 
                     }
+
                     @if (@work.WorkMembers.Any())
                     {
-                        <div class="text-left">Work Member(s)</div>
                         foreach (var workMember in work.WorkMembers)
                         {
-                            <div class="text-left">  @workMember.Member.Name </div>
+                            if (workMember.MemberId == Model.MemberId)
+                            {
+                                <div class="text-right text-info">You assigned that work</div>
+                                break;
+                            }
                         }
                     }
                     <a asp-route-id="@work.WorkId" asp-action="EditWork" class="btn btn-primary my-1">Edit work</a>

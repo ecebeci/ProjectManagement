@@ -483,7 +483,16 @@ namespace ProjectManagement.Controllers
             try
             {
                 _context.ProjectMember.Remove(ProjectMember);
+
+                var workMember = await _context.WorkMember.Where(m=> m.MemberId == pm.MemberId).ToListAsync();
+                
+                if(workMember != null) {
+                    foreach(WorkMember wm in workMember) {
+                        _context.WorkMember.Remove(wm);
+                    }
+                }
                 _context.Project.Update(ProjectMember.Project); // Update Project.UpdateDate 
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
