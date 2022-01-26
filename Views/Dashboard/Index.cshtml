@@ -35,63 +35,82 @@
                         @foreach (var work in list.Works.OrderByDescending(x => x.Priority))
                         {
 
-                            <li class="list-group-item">
-                                <div class="fs-3">
-                                    @if (work.Status == 3)
-                                    {
-                                        <p class="text-decoration-line-through"> @work.Title.</p>
-                                    }
-                                    else
-                                    {
-                                        @work.Title
-                                    }
-                                </div>
-                                <br />
-                                Priority:
-                                <span style="" class="col-3">&nbsp;&nbsp;</span>
-                                @switch (work.Priority)
-                                {
-                                    case 0:
-                                        <span style="" class="col-3">Low</span>
-                                        break;
-                                    case 1:
-                                        <span style="" class="col-3">Medium</span>
-                                        break;
-                                    case 2:
-                                        <span style="" class="col-3">High</span>
-                                        break;
-                                    case 3:
-                                        <span style="" class="col-3 text-danger">Urgent!</span>
-                                        break;
+                    <li class="list-group-item">
+                        <div class="fs-3">
+                            @if (work.Status == 3)
+                            {
+                                <p class="text-decoration-line-through"> @work.Title.</p>
+                            }
+                            else
+                            {
+                                @work.Title
+                            }
+                        </div>
+                        <br />
 
-                                }
+                        Priority:
+                        <span style="" class="col-3">&nbsp;&nbsp;</span>
+                        @switch (work.Priority)
+                        {
+                            case 0:
+                                <span style="" class="col-3">Low</span>
+                                break;
+                            case 1:
+                                <span style="" class="col-3">Medium</span>
+                                break;
+                            case 2:
+                                <span style="" class="col-3">High</span>
+                                break;
+                            case 3:
+                                <span style="" class="col-3 text-danger">Urgent!</span>
+                                break;
 
-                                <br />
-                                @if (@work.Deadline != null)
+                        }
+                        <br />
+                        Status:
+                        <span style="" class="col-3">&nbsp;&nbsp;</span>
+                        @switch (work.Status)
+                        {
+                            case 0:
+                                <span style="" class="col-3">To-Do</span>
+                                break;
+                            case 1:
+                                <span style="" class="col-3">Doing</span>
+                                break;
+                            case 2:
+                                <span style="" class="col-3">Pending</span>
+                                break;
+                            case 3:
+                                <span style="" class="col-3 text-success">Done</span>
+                                break;
+
+                        }
+                        <br />
+                        @if (@work.Deadline != null)
+                        {
+                            if (@work.Deadline < DateTime.Now && work.Status != 3)
+                            {
+                                <div class="text-danger">Deadline is over!</div>
+                                <div>Deadline:  @work.Deadline</div>
+                            }
+                            else
+                            {
+                                <div>Deadline:  @work.Deadline</div>
+                            }
+                        }
+                        @if (@work.WorkMembers.Any())
+                        {
+                            foreach (var workMember in work.WorkMembers)
+                            {
+                                if (workMember.MemberId == Model.MemberId)
                                 {
-                                    if (@work.Deadline < DateTime.Now && work.Status != 3)
-                                    {
-                                        <div class="text-danger">Deadline is over!</div>
-                                        <div>Deadline:  @work.Deadline</div>
-                                    }
-                                    else
-                                    {
-                                        <div>Deadline:  @work.Deadline</div>
-                                    }
+                                    <div class="text-right text-info">You are on this work</div>
+                                    break;
                                 }
-                                @if (@work.WorkMembers.Any())
-                                {
-                                    foreach (var workMember in work.WorkMembers)
-                                    {
-                                        if (workMember.MemberId == Model.MemberId)
-                                        {
-                                            <div class="text-right text-info">You are on this work</div>
-                                            break;
-                                        }
-                                    }
-                                }
-                                <a asp-route-id="@work.WorkId" asp-action="EditWork" class="btn btn-primary my-1">Edit work</a>
-                            </li>
+                            }
+                        }
+                        <a asp-route-id="@work.WorkId" asp-action="EditWork" class="btn btn-primary my-1">Edit work</a>
+                    </li>
                         }
                     }
                     <li class="list-group-item text-muted">
